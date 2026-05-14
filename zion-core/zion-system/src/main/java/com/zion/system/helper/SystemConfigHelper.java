@@ -1018,4 +1018,29 @@ public class SystemConfigHelper implements com.zion.crypto.CryptoConfigProvider,
     public String getWechatMpMenuConfig() {
         return getString(GROUP_WECHAT_MP, "menuConfig", "");
     }
+
+    // ============ 微信开放平台配置 ============
+
+    public static final String GROUP_WECHAT_OPEN = "wechatOpen";
+
+    /**
+     * 是否启用微信开放平台
+     */
+    public boolean isWechatOpenEnabled() {
+        return getBoolean(GROUP_WECHAT_OPEN, "enabled");
+    }
+
+    /**
+     * 获取微信开放平台 AppID
+     */
+    public String getWechatOpenAppId() {
+        return getString(GROUP_WECHAT_OPEN, "appId", "");
+    }
+
+    /**
+     * 获取微信开放平台 AppSecret
+     */
+    public String getWechatOpenAppSecret() {
+        return getString(GROUP_WECHAT_OPEN, "appSecret", "");
+    }
 }
