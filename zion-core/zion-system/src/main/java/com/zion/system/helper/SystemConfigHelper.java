@@ -32,6 +32,7 @@ public class SystemConfigHelper implements com.zion.crypto.CryptoConfigProvider,
     public static final String GROUP_SECURITY = "security";
     public static final String GROUP_WECHAT_MINIPROGRAM = "wechatMiniProgram";
     public static final String GROUP_WECHAT_MP = "wechatMp";
+    public static final String GROUP_WECHAT_OPEN = "wechatOpen";
 
     /**
      * 获取配置JSON
@@ -1020,8 +1021,6 @@ public class SystemConfigHelper implements com.zion.crypto.CryptoConfigProvider,
     }
 
     // ============ 微信开放平台配置 ============
-
-    public static final String GROUP_WECHAT_OPEN = "wechatOpen";
 
     /**
      * 是否启用微信开放平台
