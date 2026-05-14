@@ -167,12 +167,6 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '服务器管理', icon: 'ServerOutline' }
       },
       {
-        path: 'monitor/druid',
-        name: 'MonitorDruid',
-        component: IframeComponent,
-        meta: { title: 'Druid监控', icon: 'PieChartOutline', frameSrc: '/druid/index.html' }
-      },
-      {
         path: 'test/test',
         name: 'Test',
         component: () => import('@/views/test/test/index.vue'),

@@ -115,7 +115,7 @@
             <n-descriptions-item label="前端框架">Vue 3.4 + Naive UI</n-descriptions-item>
             <n-descriptions-item label="后端框架">Spring Boot 4.0</n-descriptions-item>
             <n-descriptions-item label="数据库">PgSQL 17.0</n-descriptions-item>
-            <n-descriptions-item label="缓存">Redis 7.0</n-descriptions-item>
+            <n-descriptions-item label="缓存">Redis 8.0</n-descriptions-item>
           </n-descriptions>
         </n-card>
       </n-gi>
@@ -136,7 +136,7 @@
           <n-divider/>
           <div class="project-info">
             <p class="project-desc">
-              Zion Admin 是一个基于 Spring Boot 3 + Vue 3 的现代化后台管理系统，
+              Zion Admin 是一个基于 Spring Boot 4 + Vue 3 的现代化后台管理系统，
               采用最新的技术栈，提供完整的权限管理、系统监控等功能。
             </p>
             <div class="project-stats">
@@ -224,13 +224,13 @@ const banners = [
   },
   {
     title: '技术栈',
-    subtitle: 'Spring Boot 3 + Vue 3',
+    subtitle: 'Spring Boot 4 + Vue 3',
     bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
     icon: markRaw(CodeSlashOutline),
     iconColor: 'rgba(255,255,255,0.3)'
   },
   {
-    title: '开源免费',
+    title: '功能全面',
     subtitle: '持续更新 · 文档完善',
     bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
     icon: markRaw(SparklesOutline),
@@ -354,7 +354,7 @@ const changelog = [
     date: '2026-02-28',
     type: 'success' as const,
     changes: [
-      '整合 Druid 数据库连接池监控平台',
+      '数据库连接池升级为 HikariCP',
       '定时任务新增 Cron 表达式常用预设选择',
       '定时任务新增调度日志查看功能',
       '定时任务新增调度统计图表（执行数、成功/失败比例）',

@@ -31,7 +31,6 @@
         <sa-token.version>1.45.0</sa-token.version>
         <hutool.version>5.8.44</hutool.version>
         <easyexcel.version>4.0.3</easyexcel.version>
-        <druid.version>1.2.28</druid.version>
         <lombok.version>1.18.44</lombok.version>
     </properties>
 
@@ -108,13 +107,6 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>easyexcel</artifactId>
                 <version>${easyexcel.version}</version>
-            </dependency>
-
-            <!-- Druid 数据库连接池 -->
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid-spring-boot-4-starter</artifactId>
-                <version>${druid.version}</version>
             </dependency>
 
             <!-- ==================== 内部模块 ==================== -->

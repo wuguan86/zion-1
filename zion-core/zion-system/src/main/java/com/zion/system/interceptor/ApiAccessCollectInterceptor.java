@@ -75,8 +75,7 @@ public class ApiAccessCollectInterceptor implements HandlerInterceptor {
 
     private boolean shouldExclude(String path) {
         if (path == null) return true;
-        return path.startsWith("/actuator") || path.startsWith("/druid")
-                || path.startsWith("/error") || path.contains(".");
+        return path.startsWith("/actuator") || path.startsWith("/error") || path.contains(".");
     }
 
     private String getIpAddr(HttpServletRequest request) {
