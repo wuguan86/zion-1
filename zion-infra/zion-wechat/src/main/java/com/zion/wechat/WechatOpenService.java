@@ -54,8 +54,8 @@ public class WechatOpenService {
         String appId = configHelper.getWechatOpenAppId();
         String appSecret = configHelper.getWechatOpenAppSecret();
 
-        if (appId == null || appId.isEmpty()) {
-            throw new RuntimeException("开放平台AppID未配置");
+        if (appId == null || appId.isEmpty() || appSecret == null || appSecret.isEmpty()) {
+            throw new RuntimeException("微信开放平台未配置，请先配置 AppID 和 AppSecret");
         }
 
         Map<String, Object> params = new HashMap<>();
@@ -156,6 +156,10 @@ public class WechatOpenService {
     public QrOAuthResult getUserInfoByCode(String code) {
         String appId = configHelper.getWechatOpenAppId();
         String appSecret = configHelper.getWechatOpenAppSecret();
+
+        if (appId == null || appId.isEmpty() || appSecret == null || appSecret.isEmpty()) {
+            throw new RuntimeException("微信开放平台未配置，请先配置 AppID 和 AppSecret");
+        }
 
         // 1. code 换取 access_token + openid
         Map<String, Object> params = new HashMap<>();
