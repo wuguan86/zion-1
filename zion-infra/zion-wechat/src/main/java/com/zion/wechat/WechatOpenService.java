@@ -197,6 +197,7 @@ public class WechatOpenService {
         result.setNickname(userJson.getStr("nickname"));
         result.setHeadImgUrl(userJson.getStr("headimgurl"));
         result.setSex(userJson.getInt("sex"));
+        result.setRawJson(userResponse);
         return result;
     }
 
@@ -214,5 +215,6 @@ public class WechatOpenService {
         private String nickname;
         private String headImgUrl;
         private Integer sex;
+        private String rawJson;
     }
 }

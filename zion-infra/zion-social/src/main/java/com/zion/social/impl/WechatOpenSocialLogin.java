@@ -1,7 +1,6 @@
 package com.zion.social.impl;
 
 import com.zion.social.SocialLoginService;
-import com.zion.system.helper.SystemConfigHelper;
 import com.zion.wechat.WechatOpenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class WechatOpenSocialLogin implements SocialLoginService {
 
-    private final SystemConfigHelper configHelper;
     private final WechatOpenService wechatOpenService;
 
     @Override
@@ -42,6 +40,7 @@ public class WechatOpenSocialLogin implements SocialLoginService {
         info.setNickname(oauthResult.getNickname());
         info.setAvatar(oauthResult.getHeadImgUrl());
         info.setGender(oauthResult.getSex());
+        info.setRawJson(oauthResult.getRawJson());
         return info;
     }
 }
