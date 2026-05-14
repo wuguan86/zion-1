@@ -25,10 +25,26 @@
             <groupId>com.zion</groupId>
             <artifactId>zion-system</artifactId>
         </dependency>
+        <!-- 短信模块 -->
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-sms</artifactId>
+        </dependency>
+        <!-- 微信模块 -->
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-wechat</artifactId>
+        </dependency>
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <!-- 测试 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
