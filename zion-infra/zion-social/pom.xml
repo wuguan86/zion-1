@@ -21,6 +21,12 @@
             <artifactId>zion-system</artifactId>
         </dependency>
 
+        <!-- 依赖微信模块（WechatOpenService） -->
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-wechat</artifactId>
+        </dependency>
+
         <!-- Hutool -->
         <dependency>
             <groupId>cn.hutool</groupId>
@@ -31,6 +37,13 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
