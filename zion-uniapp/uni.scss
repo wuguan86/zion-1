@@ -1,0 +1,69 @@
+/* uview-plus 主题 */
+@import 'uview-plus/theme.scss';
+
+/* Zion 公共 - 主题变量 */
+
+/* 品牌颜色 - 微信绿 */
+$brand-primary: #07C160;
+$brand-primary-light: #38D677;
+$brand-primary-lighter: #69E599;
+$brand-primary-dark: #059B4B;
+$brand-primary-bg: #E8F8EE;
+
+$brand-success: #07C160;
+$brand-warning: #FAAD14;
+$brand-error: #E53E3E;
+
+/* 文字颜色 */
+$text-primary: #1A1A1A;
+$text-secondary: #4A4A4A;
+$text-muted: #999999;
+$text-inverse: #FFFFFF;
+
+/* 背景颜色 */
+$bg-page: #EDEDED;
+$bg-white: #FFFFFF;
+$bg-grey: #F5F5F5;
+$bg-hover: #F0F0F0;
+
+/* 边框颜色 */
+$border-color: #E5E5E5;
+$border-light: #F0F0F0;
+
+/* 聊天气泡 */
+$chat-bubble-self: #95EC69;
+$chat-bubble-other: #FFFFFF;
+$chat-text-self: #1A1A1A;
+$chat-text-other: #1A1A1A;
+
+/* 字体大小 */
+$font-xs: 22rpx;
+$font-sm: 24rpx;
+$font-base: 28rpx;
+$font-md: 30rpx;
+$font-lg: 32rpx;
+$font-xl: 36rpx;
+$font-xxl: 44rpx;
+
+/* uni-app 内置变量覆盖 */
+$uni-color-primary: #07C160;
+$uni-color-success: #07C160;
+$uni-color-warning: #FAAD14;
+$uni-color-error: #E53E3E;
+
+$uni-text-color: #1A1A1A;
+$uni-text-color-inverse: #FFFFFF;
+$uni-text-color-grey: #999999;
+$uni-text-color-placeholder: #BBBBBB;
+$uni-text-color-disable: #CCCCCC;
+
+$uni-bg-color: #FFFFFF;
+$uni-bg-color-grey: #EDEDED;
+$uni-bg-color-hover: #F0F0F0;
+$uni-bg-color-mask: rgba(0, 0, 0, 0.5);
+
+$uni-border-color: #E5E5E5;
+
+$uni-font-size-sm: 24rpx;
+$uni-font-size-base: 28rpx;
+$uni-font-size-lg: 32rpx;

@@ -1,0 +1,137 @@
+package ${packageName}.controller;
+
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.alibaba.excel.EasyExcel;
+import com.Zion.common.result.PageResult;
+import com.Zion.common.result.Result;
+import com.Zion.system.annotation.Log;
+import com.Zion.system.annotation.Log.BusinessType;
+import ${packageName}.entity.${className};
+import ${packageName}.service.${className}Service;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+/**
+ * ${functionName}
+ * 
+ * @author ${author}
+ * @date ${datetime}
+ */
+@RestController
+@RequestMapping("/${moduleName}/${businessName}")
+@RequiredArgsConstructor
+public class ${className}Controller {
+
+    private final ${className}Service ${classname}Service;
+
+    /**
+     * 分页查询
+     */
+    @GetMapping("/page")
+    @SaCheckPermission("${moduleName}:${businessName}:list")
+    public Result<PageResult<${className}>> page(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer pageSize#foreach($column in $columns)#if($column.isQuery == 1),
+            @RequestParam(required = false) $column.javaType $column.javaField#end#end) {
+        var result = ${classname}Service.page(page, pageSize#foreach($column in $columns)#if($column.isQuery == 1), $column.javaField#end#end);
+        return Result.ok(PageResult.of(result));
+    }
+
+    /**
+     * 获取详情
+     */
+    @GetMapping("/{${pkColumn.javaField}}")
+    @SaCheckPermission("${moduleName}:${businessName}:query")
+    public Result<${className}> getInfo(@PathVariable ${pkColumn.javaType} ${pkColumn.javaField}) {
+        return Result.ok(${classname}Service.getById(${pkColumn.javaField}));
+    }
+
+    /**
+     * 新增
+     */
+    @PostMapping
+    @SaCheckPermission("${moduleName}:${businessName}:add")
+    @Log(title = "${functionName}", businessType = BusinessType.INSERT)
+    public Result<Void> add(@RequestBody ${className} ${classname}) {
+        ${classname}Service.create(${classname});
+        return Result.ok();
+    }
+
+    /**
+     * 修改
+     */
+    @PutMapping
+    @SaCheckPermission("${moduleName}:${businessName}:edit")
+    @Log(title = "${functionName}", businessType = BusinessType.UPDATE)
+    public Result<Void> edit(@RequestBody ${className} ${classname}) {
+        ${classname}Service.update(${classname});
+        return Result.ok();
+    }
+
+    /**
+     * 删除
+     */
+    @DeleteMapping("/{${pkColumn.javaField}s}")
+    @SaCheckPermission("${moduleName}:${businessName}:remove")
+    @Log(title = "${functionName}", businessType = BusinessType.DELETE)
+    public Result<Void> remove(@PathVariable ${pkColumn.javaType}[] ${pkColumn.javaField}s) {
+        ${classname}Service.delete(${pkColumn.javaField}s);
+        return Result.ok();
+    }
+
+    /**
+     * 导出
+     */
+    @GetMapping("/export")
+    @SaCheckPermission("${moduleName}:${businessName}:export")
+    @Log(title = "${functionName}", businessType = BusinessType.EXPORT)
+    public void export(HttpServletResponse response#foreach($column in $columns)#if($column.isQuery == 1),
+            @RequestParam(required = false) $column.javaType $column.javaField#end#end,
+            @RequestParam(required = false) String ids) throws IOException {
+        List<${pkColumn.javaType}> idList = null;
+        if (ids != null && !ids.isEmpty()) {
+            idList = Arrays.stream(ids.split(",")).map(String::trim).filter(s -> !s.isEmpty())
+                    .map(s -> #if($pkColumn.javaType == 'Long')Long.parseLong(s)#else Integer.parseInt(s)#end).collect(Collectors.toList());
+        }
+        List<${className}> list = ${classname}Service.listForExport(idList#foreach($column in $columns)#if($column.isQuery == 1), $column.javaField#end#end);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("${functionName}数据", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), ${className}.class).sheet("${functionName}").doWrite(list);
+    }
+
+    /**
+     * 导入
+     */
+    @PostMapping("/import")
+    @SaCheckPermission("${moduleName}:${businessName}:import")
+    @Log(title = "${functionName}", businessType = BusinessType.IMPORT)
+    public Result<Map<String, Object>> importData(@RequestParam("file") MultipartFile file) {
+        Map<String, Object> result = ${classname}Service.importData(file);
+        return Result.ok(result);
+    }
+
+    /**
+     * 下载导入模板
+     */
+    @GetMapping("/template")
+    public void downloadTemplate(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("${functionName}导入模板", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), ${className}.class).sheet("${functionName}").doWrite(new ArrayList<>());
+    }
+}

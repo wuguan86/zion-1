@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zion.system.mapper.SysUserMapper">
+
+    <select id="selectUserPage" resultType="com.zion.system.entity.SysUser">
+        SELECT u.*, d.dept_name as deptName
+        FROM sys_user u
+                 LEFT JOIN sys_dept d ON u.dept_id = d.id AND d.deleted = 0
+            ${ew.customSqlSegment}
+    </select>
+
+</mapper>
+

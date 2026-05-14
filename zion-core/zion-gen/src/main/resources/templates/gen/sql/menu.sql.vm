@@ -1,0 +1,23 @@
+-- ${functionName}菜单 SQL
+-- 菜单默认放在"开发工具"目录下
+-- 菜单类型: 1-目录 2-菜单 3-按钮
+
+-- 获取开发工具菜单ID（如果不存在则使用0作为顶级菜单）
+SET @toolMenuId = (SELECT IFNULL((SELECT id FROM sys_menu WHERE name = '开发工具' AND deleted = 0 LIMIT 1), 0));
+
+-- 菜单 (type=2)
+INSERT INTO sys_menu (parent_id, name, type, path, component, permission, icon, sort, visible, status, is_frame, deleted)
+VALUES (@toolMenuId, '${functionName}', 2, '${moduleName}/${businessName}', '${moduleName}/${businessName}/index', '${moduleName}:${businessName}:list', 'ListOutline', 1, 1, 1, 0, 0);
+
+-- 获取刚插入的菜单ID
+SET @parentId = LAST_INSERT_ID();
+
+-- 按钮权限 (type=3)
+INSERT INTO sys_menu (parent_id, name, type, path, component, permission, icon, sort, visible, status, is_frame, deleted) VALUES
+(@parentId, '${functionName}查询', 3, NULL, NULL, '${moduleName}:${businessName}:list', NULL, 1, 1, 1, 0, 0),
+(@parentId, '${functionName}详情', 3, NULL, NULL, '${moduleName}:${businessName}:query', NULL, 2, 1, 1, 0, 0),
+(@parentId, '${functionName}新增', 3, NULL, NULL, '${moduleName}:${businessName}:add', NULL, 3, 1, 1, 0, 0),
+(@parentId, '${functionName}修改', 3, NULL, NULL, '${moduleName}:${businessName}:edit', NULL, 4, 1, 1, 0, 0),
+(@parentId, '${functionName}删除', 3, NULL, NULL, '${moduleName}:${businessName}:remove', NULL, 5, 1, 1, 0, 0),
+(@parentId, '${functionName}导出', 3, NULL, NULL, '${moduleName}:${businessName}:export', NULL, 6, 1, 1, 0, 0),
+(@parentId, '${functionName}导入', 3, NULL, NULL, '${moduleName}:${businessName}:import', NULL, 7, 1, 1, 0, 0);

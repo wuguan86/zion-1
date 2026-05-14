@@ -1,0 +1,67 @@
+#set($dollar = '$')
+import { request } from '@/utils/request'
+
+// ${functionName} 类型定义
+export interface ${className} {
+#foreach($column in $columns)
+  ${column.javaField}?: #if($column.javaType == 'Integer' || $column.javaType == 'Long')number#elseif($column.javaType == 'Boolean')boolean#else string#end
+
+#end
+}
+
+// ${functionName} API
+export const ${classname}Api = {
+  // 分页查询
+  page(params: { page: number; pageSize: number#foreach($column in $columns)#if($column.isQuery == 1); ${column.javaField}?: #if($column.javaType == 'Integer' || $column.javaType == 'Long')number#elseif($column.javaType == 'Boolean')boolean#else string#end#end#end }) {
+    return request({ url: '/${moduleName}/${businessName}/page', method: 'get', params })
+  },
+
+  // 获取详情
+  detail(${pkColumn.javaField}: #if($pkColumn.javaType == 'Long')number#else string#end) {
+    return request({ url: `/${moduleName}/${businessName}/${dollar}{${pkColumn.javaField}}`, method: 'get' })
+  },
+
+  // 新增
+  create(data: ${className}) {
+    return request({ url: '/${moduleName}/${businessName}', method: 'post', data })
+  },
+
+  // 修改
+  update(data: ${className}) {
+    return request({ url: '/${moduleName}/${businessName}', method: 'put', data })
+  },
+
+  // 删除
+  delete(${pkColumn.javaField}s: #if($pkColumn.javaType == 'Long')number[]#else string[]#end) {
+    return request({ url: `/${moduleName}/${businessName}/${dollar}{${pkColumn.javaField}s.join(',')}`, method: 'delete' })
+  },
+
+  // 导出
+  export(params?: { ids?: #if($pkColumn.javaType == 'Long')number[]#else string[]#end#foreach($column in $columns)#if($column.isQuery == 1); ${column.javaField}?: #if($column.javaType == 'Integer' || $column.javaType == 'Long')number#else string#end#end#end }) {
+    const p: Record<string, any> = {}
+    if (params?.ids?.length) p.ids = params.ids.join(',')
+#foreach($column in $columns)
+#if($column.isQuery == 1)
+    if (params?.${column.javaField} !== undefined && params?.${column.javaField} !== null) p.${column.javaField} = params.${column.javaField}
+#end
+#end
+    return request({ url: `/${moduleName}/${businessName}/export`, method: 'get', params: p, responseType: 'blob' })
+  },
+
+  // 导入
+  importData(file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+    return request<{ success: number; fail: number; errors: string[] }>({
+      url: `/${moduleName}/${businessName}/import`,
+      method: 'post',
+      data: formData,
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+  },
+
+  // 下载导入模板
+  downloadTemplate() {
+    return request({ url: `/${moduleName}/${businessName}/template`, method: 'get', responseType: 'blob' })
+  }
+}

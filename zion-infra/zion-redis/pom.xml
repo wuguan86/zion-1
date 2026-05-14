@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.zion</groupId>
+        <artifactId>zion-infra</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>zion-redis</artifactId>
+    <packaging>jar</packaging>
+    <name>Zion Redis</name>
+    <description>Redis基础设施 - 缓存支持</description>
+
+    <dependencies>
+        <!-- Redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+
+        <!-- Sa-Token Redis (Sa-Token会话持久化到Redis) -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-jackson</artifactId>
+        </dependency>
+        <!-- Sa-Token Jackson3 序列化插件（适配 Spring Boot 4） -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-jackson3</artifactId>
+        </dependency>
+    </dependencies>
+</project>

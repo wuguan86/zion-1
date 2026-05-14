@@ -1,0 +1,134 @@
+package ${packageName}.service.impl;
+
+import com.alibaba.excel.EasyExcel;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import ${packageName}.entity.${className};
+import ${packageName}.mapper.${className}Mapper;
+import ${packageName}.service.${className}Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.*;
+
+/**
+ * ${functionName} Service 实现
+ * 
+ * @author ${author}
+ * @date ${datetime}
+ */
+@Service
+@RequiredArgsConstructor
+public class ${className}ServiceImpl implements ${className}Service {
+
+    private final ${className}Mapper ${classname}Mapper;
+
+    @Override
+    public Page<${className}> page(Integer page, Integer pageSize#foreach($column in $columns)#if($column.isQuery == 1), $column.javaType $column.javaField#end#end) {
+        Page<${className}> pageParam = new Page<>(page, pageSize);
+        LambdaQueryWrapper<${className}> wrapper = new LambdaQueryWrapper<>();
+#foreach($column in $columns)
+#if($column.isQuery == 1)
+#if($column.javaType == 'String')
+#if($column.queryType == 'LIKE')
+        if (StringUtils.hasText($column.javaField)) {
+            wrapper.like(${className}::get${column.javaField.substring(0,1).toUpperCase()}${column.javaField.substring(1)}, $column.javaField);
+        }
+#else
+        if (StringUtils.hasText($column.javaField)) {
+            wrapper.eq(${className}::get${column.javaField.substring(0,1).toUpperCase()}${column.javaField.substring(1)}, $column.javaField);
+        }
+#end
+#else
+        if ($column.javaField != null) {
+            wrapper.eq(${className}::get${column.javaField.substring(0,1).toUpperCase()}${column.javaField.substring(1)}, $column.javaField);
+        }
+#end
+#end
+#end
+        wrapper.orderByDesc(${className}::get${pkColumn.javaField.substring(0,1).toUpperCase()}${pkColumn.javaField.substring(1)});
+        return ${classname}Mapper.selectPage(pageParam, wrapper);
+    }
+
+    @Override
+    public ${className} getById(${pkColumn.javaType} ${pkColumn.javaField}) {
+        return ${classname}Mapper.selectById(${pkColumn.javaField});
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void create(${className} ${classname}) {
+        ${classname}Mapper.insert(${classname});
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(${className} ${classname}) {
+        ${classname}Mapper.updateById(${classname});
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void delete(${pkColumn.javaType}[] ${pkColumn.javaField}s) {
+        ${classname}Mapper.deleteBatchIds(Arrays.asList(${pkColumn.javaField}s));
+    }
+
+    @Override
+    public List<${className}> listForExport(List<${pkColumn.javaType}> ids#foreach($column in $columns)#if($column.isQuery == 1), $column.javaType $column.javaField#end#end) {
+        LambdaQueryWrapper<${className}> wrapper = new LambdaQueryWrapper<>();
+        if (ids != null && !ids.isEmpty()) {
+            wrapper.in(${className}::get${pkColumn.javaField.substring(0,1).toUpperCase()}${pkColumn.javaField.substring(1)}, ids);
+        } else {
+#foreach($column in $columns)
+#if($column.isQuery == 1)
+#if($column.javaType == 'String')
+            if (StringUtils.hasText($column.javaField)) {
+                wrapper.eq(${className}::get${column.javaField.substring(0,1).toUpperCase()}${column.javaField.substring(1)}, $column.javaField);
+            }
+#else
+            if ($column.javaField != null) {
+                wrapper.eq(${className}::get${column.javaField.substring(0,1).toUpperCase()}${column.javaField.substring(1)}, $column.javaField);
+            }
+#end
+#end
+#end
+        }
+        wrapper.orderByDesc(${className}::get${pkColumn.javaField.substring(0,1).toUpperCase()}${pkColumn.javaField.substring(1)});
+        return ${classname}Mapper.selectList(wrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> importData(MultipartFile file) {
+        int success = 0;
+        int fail = 0;
+        List<String> errors = new ArrayList<>();
+        try {
+            List<${className}> list = EasyExcel.read(file.getInputStream(), ${className}.class, null).sheet().doReadSync();
+            for (int i = 0; i < list.size(); i++) {
+                try {
+                    ${className} item = list.get(i);
+                    if (item != null) {
+                        item.set${pkColumn.javaField.substring(0,1).toUpperCase()}${pkColumn.javaField.substring(1)}(null);
+                        ${classname}Mapper.insert(item);
+                        success++;
+                    }
+                } catch (Exception e) {
+                    fail++;
+                    errors.add("第" + (i + 2) + "行: " + e.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("读取文件失败: " + e.getMessage());
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", success);
+        result.put("fail", fail);
+        result.put("errors", errors);
+        return result;
+    }
+}

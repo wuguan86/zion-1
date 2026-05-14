@@ -1,0 +1,10 @@
+{
+  "name": "zion-uniapp",
+  "version": "1.0.0",
+  "description": "Zion 公共 - 聊天办公小程序",
+  "main": "main.js",
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "uview-plus": "3.3.36"
+  }
+}

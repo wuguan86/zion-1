@@ -1,0 +1,600 @@
+<template>
+  <div class="page-container">
+    <n-card>
+      <!-- 搜索表单 -->
+      <div class="search-form">
+        <n-form inline :model="searchForm" label-placement="left">
+#foreach($column in $columns)
+#if($column.isQuery == 1)
+#if($column.htmlType == 'input')
+          <n-form-item label="${column.columnComment}">
+            <n-input v-model:value="searchForm.${column.javaField}" placeholder="请输入${column.columnComment}" clearable />
+          </n-form-item>
+#elseif($column.htmlType == 'select' || $column.htmlType == 'radio')
+          <n-form-item label="${column.columnComment}">
+#if($column.dictType && $column.dictType != '')
+            <n-select v-model:value="searchForm.${column.javaField}" placeholder="请选择${column.columnComment}" clearable style="width: 150px" :options="${column.javaField}Options" />
+#else
+            <n-select v-model:value="searchForm.${column.javaField}" placeholder="请选择${column.columnComment}" clearable style="width: 150px" :options="[]" />
+#end
+          </n-form-item>
+#elseif($column.htmlType == 'datetime')
+          <n-form-item label="${column.columnComment}">
+            <n-date-picker v-model:value="searchForm.${column.javaField}" type="datetime" clearable />
+          </n-form-item>
+#end
+#end
+#end
+          <n-form-item>
+            <n-space>
+              <n-button type="primary" @click="handleSearch">
+                <template #icon><n-icon><SearchOutline /></n-icon></template>
+                搜索
+              </n-button>
+              <n-button @click="handleReset">
+                <template #icon><n-icon><RefreshOutline /></n-icon></template>
+                重置
+              </n-button>
+            </n-space>
+          </n-form-item>
+        </n-form>
+      </div>
+
+      <!-- 工具栏 -->
+      <div class="table-toolbar">
+        <n-space>
+          <n-button type="primary" @click="handleAdd">
+            <template #icon><n-icon><AddOutline /></n-icon></template>
+            新增
+          </n-button>
+          <n-button @click="importModalVisible = true">
+            <template #icon><n-icon><CloudUploadOutline /></n-icon></template>
+            导入
+          </n-button>
+          <n-button @click="handleExport">
+            <template #icon><n-icon><DownloadOutline /></n-icon></template>
+            导出{{ selectedIds.length > 0 ? `(${selectedIds.length})` : '' }}
+          </n-button>
+          <n-button type="error" :disabled="selectedIds.length === 0" @click="handleBatchDelete">
+            <template #icon><n-icon><TrashOutline /></n-icon></template>
+            删除
+          </n-button>
+        </n-space>
+      </div>
+
+      <!-- 表格 -->
+      <n-data-table
+        :columns="columns"
+        :data="tableData"
+        :loading="loading"
+        :pagination="pagination"
+        :row-key="(row) => row.${pkColumn.javaField}"
+        :scroll-x="1200"
+        @update:page="handlePageChange"
+        @update:page-size="handlePageSizeChange"
+        @update:checked-row-keys="handleCheck"
+      />
+    </n-card>
+
+    <!-- 新增/编辑弹窗 -->
+#if($formLayout == 'grid')
+    <n-modal v-model:show="modalVisible" preset="card" :title="modalTitle" style="width: 800px">
+#else
+    <n-modal v-model:show="modalVisible" preset="card" :title="modalTitle" style="width: 600px">
+#end
+      <n-form ref="formRef" :model="formData" :rules="formRules" label-placement="left" label-width="100px">
+#if($formLayout == 'grid')
+        <n-grid :cols="2" :x-gap="24">
+#end
+#foreach($column in $columns)
+#if($column.isInsert == 1 || $column.isEdit == 1)
+#if($formLayout == 'grid')
+#if($column.htmlType == 'input')
+        <n-form-item-gi label="${column.columnComment}" path="${column.javaField}">
+          <n-input v-model:value="formData.${column.javaField}" placeholder="请输入${column.columnComment}" />
+        </n-form-item-gi>
+#elseif($column.htmlType == 'textarea')
+        <n-form-item-gi label="${column.columnComment}" path="${column.javaField}">
+          <n-input v-model:value="formData.${column.javaField}" type="textarea" placeholder="请输入${column.columnComment}" />
+        </n-form-item-gi>
+#elseif($column.htmlType == 'select')
+        <n-form-item-gi label="${column.columnComment}" path="${column.javaField}">
+#if($column.dictType && $column.dictType != '')
+          <n-select v-model:value="formData.${column.javaField}" placeholder="请选择${column.columnComment}" :options="${column.javaField}Options" />
+#else
+          <n-select v-model:value="formData.${column.javaField}" placeholder="请选择${column.columnComment}" :options="[]" />
+#end
+        </n-form-item-gi>
+#elseif($column.htmlType == 'radio' && $column.dictType && $column.dictType != '')
+        <n-form-item-gi label="${column.columnComment}" path="${column.javaField}">
+          <n-radio-group v-model:value="formData.${column.javaField}">
+            <n-space>
+              <n-radio v-for="opt in ${column.javaField}Options" :key="opt.value" :value="opt.value">{{ opt.label }}</n-radio>
+            </n-space>
+          </n-radio-group>
+        </n-form-item-gi>
+#elseif($column.htmlType == 'checkbox' && $column.dictType && $column.dictType != '')
+        <n-form-item-gi label="${column.columnComment}" path="${column.javaField}">
+          <n-checkbox-group v-model:value="formData.${column.javaField}">
+            <n-space>
+              <n-checkbox v-for="opt in ${column.javaField}Options" :key="opt.value" :value="opt.value">{{ opt.label }}</n-checkbox>
+            </n-space>
+          </n-checkbox-group>
+        </n-form-item-gi>
+#elseif($column.htmlType == 'datetime')
+        <n-form-item-gi label="${column.columnComment}" path="${column.javaField}">
+          <n-date-picker v-model:value="formData.${column.javaField}" type="datetime" clearable style="width: 100%" />
+        </n-form-item-gi>
+#elseif($column.htmlType == 'imageUpload')
+        <n-form-item-gi label="${column.columnComment}" path="${column.javaField}">
+          <ImageUpload v-model="formData.${column.javaField}" />
+        </n-form-item-gi>
+#end
+#else
+#if($column.htmlType == 'input')
+        <n-form-item label="${column.columnComment}" path="${column.javaField}">
+          <n-input v-model:value="formData.${column.javaField}" placeholder="请输入${column.columnComment}" />
+        </n-form-item>
+#elseif($column.htmlType == 'textarea')
+        <n-form-item label="${column.columnComment}" path="${column.javaField}">
+          <n-input v-model:value="formData.${column.javaField}" type="textarea" placeholder="请输入${column.columnComment}" />
+        </n-form-item>
+#elseif($column.htmlType == 'select')
+        <n-form-item label="${column.columnComment}" path="${column.javaField}">
+#if($column.dictType && $column.dictType != '')
+          <n-select v-model:value="formData.${column.javaField}" placeholder="请选择${column.columnComment}" :options="${column.javaField}Options" />
+#else
+          <n-select v-model:value="formData.${column.javaField}" placeholder="请选择${column.columnComment}" :options="[]" />
+#end
+        </n-form-item>
+#elseif($column.htmlType == 'radio' && $column.dictType && $column.dictType != '')
+        <n-form-item label="${column.columnComment}" path="${column.javaField}">
+          <n-radio-group v-model:value="formData.${column.javaField}">
+            <n-space>
+              <n-radio v-for="opt in ${column.javaField}Options" :key="opt.value" :value="opt.value">{{ opt.label }}</n-radio>
+            </n-space>
+          </n-radio-group>
+        </n-form-item>
+#elseif($column.htmlType == 'checkbox' && $column.dictType && $column.dictType != '')
+        <n-form-item label="${column.columnComment}" path="${column.javaField}">
+          <n-checkbox-group v-model:value="formData.${column.javaField}">
+            <n-space>
+              <n-checkbox v-for="opt in ${column.javaField}Options" :key="opt.value" :value="opt.value">{{ opt.label }}</n-checkbox>
+            </n-space>
+          </n-checkbox-group>
+        </n-form-item>
+#elseif($column.htmlType == 'datetime')
+        <n-form-item label="${column.columnComment}" path="${column.javaField}">
+          <n-date-picker v-model:value="formData.${column.javaField}" type="datetime" clearable style="width: 100%" />
+        </n-form-item>
+#elseif($column.htmlType == 'imageUpload')
+        <n-form-item label="${column.columnComment}" path="${column.javaField}">
+          <ImageUpload v-model="formData.${column.javaField}" />
+        </n-form-item>
+#end
+#end
+#end
+#end
+#if($formLayout == 'grid')
+        </n-grid>
+#end
+      </n-form>
+      <template #footer>
+        <n-space justify="end">
+          <n-button @click="modalVisible = false">取消</n-button>
+          <n-button type="primary" @click="handleSubmit">确定</n-button>
+        </n-space>
+      </template>
+    </n-modal>
+
+    <!-- 导入弹窗 -->
+    <n-modal v-model:show="importModalVisible" preset="card" title="导入${functionName}" style="width: 500px">
+      <n-space vertical>
+        <n-alert type="info">
+          <template #header>导入说明</template>
+          <ul style="margin: 0; padding-left: 16px; line-height: 1.8">
+            <li>请先下载导入模板，按模板格式填写数据</li>
+            <li>支持 .xlsx 或 .xls 格式</li>
+          </ul>
+        </n-alert>
+        <n-space>
+          <n-button type="primary" @click="handleDownloadTemplate">
+            <template #icon><n-icon><DownloadOutline /></n-icon></template>
+            下载模板
+          </n-button>
+        </n-space>
+        <n-upload :max="1" accept=".xlsx,.xls" :show-file-list="true" :custom-request="handleImportUpload">
+          <n-upload-dragger>
+            <div style="margin-bottom: 12px">
+              <n-icon size="48" :depth="3"><CloudUploadOutline /></n-icon>
+            </div>
+            <n-text style="font-size: 16px">点击或拖拽文件到此处上传</n-text>
+            <n-p depth="3" style="margin: 8px 0 0 0">支持 .xlsx 或 .xls 格式</n-p>
+          </n-upload-dragger>
+        </n-upload>
+      </n-space>
+      <template #footer>
+        <n-button @click="importModalVisible = false">关闭</n-button>
+      </template>
+    </n-modal>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive, h, onMounted } from 'vue'
+import { NButton, NSpace, NIcon, NUpload, useMessage, useDialog, type DataTableColumns, type UploadCustomRequestOptions } from 'naive-ui'
+import { SearchOutline, RefreshOutline, AddOutline, TrashOutline, CreateOutline, CloudUploadOutline, DownloadOutline } from '@vicons/ionicons5'
+import { ${classname}Api, type ${className} } from '@/api/${businessName}'
+#foreach($column in $columns)
+#if($column.htmlType == 'imageUpload')
+import ImageUpload from '@/components/ImageUpload.vue'
+#break
+#end
+#end
+#set($hasDict = false)
+#foreach($column in $columns)
+#if($column.dictType && $column.dictType != '' && ($column.htmlType == 'select' || $column.htmlType == 'radio' || $column.htmlType == 'checkbox'))
+#set($hasDict = true)
+#break
+#end
+#end
+#if($hasDict)
+import { dictDataApi } from '@/api/org'
+#end
+
+const message = useMessage()
+const dialog = useDialog()
+
+// 搜索表单
+const searchForm = reactive({
+#foreach($column in $columns)
+#if($column.isQuery == 1)
+  ${column.javaField}: #if($column.javaType == 'String')''#else null as number | null#end,
+#end
+#end
+})
+
+// 表格数据
+const tableData = ref<${className}[]>([])
+const loading = ref(false)
+const selectedIds = ref<number[]>([])
+const pagination = reactive({
+  page: 1,
+  pageSize: 10,
+  itemCount: 0,
+  showSizePicker: true,
+  pageSizes: [10, 20, 50]
+})
+
+// 弹窗
+const modalVisible = ref(false)
+const modalTitle = ref('')
+const importModalVisible = ref(false)
+const formRef = ref()
+const defaultFormData: ${className} = {
+#foreach($column in $columns)
+#if($column.isInsert == 1 || $column.isEdit == 1)
+  ${column.javaField}: #if($column.htmlType == 'checkbox' && $column.dictType && $column.dictType != '')[]#elseif($column.javaType == 'String')''#elseif($column.javaType == 'Integer' || $column.javaType == 'Long')undefined#else undefined#end,
+#end
+#end
+}
+const formData = reactive<${className}>({ ...defaultFormData })
+
+// 字典选项（下拉框/单选框/复选框关联字典时使用）
+#foreach($column in $columns)
+#if($column.dictType && $column.dictType != '' && ($column.htmlType == 'select' || $column.htmlType == 'radio' || $column.htmlType == 'checkbox'))
+const ${column.javaField}Options = ref<{ label: string; value: any }[]>([])
+#end
+#end
+
+// 表单校验规则
+const formRules = {
+#foreach($column in $columns)
+#if($column.isRequired == 1 && ($column.isInsert == 1 || $column.isEdit == 1))
+  ${column.javaField}: { required: true, message: '请输入${column.columnComment}', trigger: 'blur' },
+#end
+#end
+}
+
+// 表格列
+const columns: DataTableColumns<${className}> = [
+  { type: 'selection' },
+#foreach($column in $columns)
+#if($column.isList == 1)
+#if($column.htmlType == 'imageUpload')
+  { 
+    title: '${column.columnComment}', 
+    key: '${column.javaField}',
+    width: 100,
+    render(row) {
+      return row.${column.javaField} ? h('img', { 
+        src: row.${column.javaField}, 
+        style: { width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' } 
+      }) : '-'
+    }
+  },
+#elseif($column.dictType && $column.dictType != '' && ($column.htmlType == 'select' || $column.htmlType == 'radio'))
+  { title: '${column.columnComment}', key: '${column.javaField}',
+    render(row) {
+      const val = row.${column.javaField}
+      const opt = ${column.javaField}Options.value.find(o => o.value === val || String(o.value) === String(val))
+      return opt ? opt.label : (val ?? '-')
+    }
+  },
+#elseif($column.dictType && $column.dictType != '' && $column.htmlType == 'checkbox')
+  { title: '${column.columnComment}', key: '${column.javaField}',
+    render(row) {
+      const vals = Array.isArray(row.${column.javaField}) ? row.${column.javaField} : (row.${column.javaField} ? String(row.${column.javaField}).split(',') : [])
+      return vals.map(v => ${column.javaField}Options.value.find(o => String(o.value) === String(v))?.label ?? v).filter(Boolean).join(', ') || '-'
+    }
+  },
+#else
+  { title: '${column.columnComment}', key: '${column.javaField}'#if($column.javaField == 'createTime' || $column.javaField == 'updateTime'), width: 180#end },
+#end
+#end
+#end
+  {
+    title: '操作',
+    key: 'actions',
+    width: 140,
+    fixed: 'right',
+    render(row) {
+      return h('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'nowrap' } }, [
+        h(NButton, { size: 'small', quaternary: true, onClick: () => handleEdit(row) }, {
+          default: () => [h(NIcon, null, { default: () => h(CreateOutline) }), ' 编辑']
+        }),
+        h(NButton, { size: 'small', quaternary: true, type: 'error', onClick: () => handleDelete(row) }, {
+          default: () => [h(NIcon, null, { default: () => h(TrashOutline) }), ' 删除']
+        })
+      ])
+    }
+  }
+]
+
+// 加载数据
+async function loadData() {
+  loading.value = true
+  try {
+    const res = await ${classname}Api.page({
+      page: pagination.page,
+      pageSize: pagination.pageSize,
+#foreach($column in $columns)
+#if($column.isQuery == 1)
+      ${column.javaField}: searchForm.${column.javaField} || undefined,
+#end
+#end
+    })
+    tableData.value = res.list
+    pagination.itemCount = res.total
+  } finally {
+    loading.value = false
+  }
+}
+
+// 搜索
+function handleSearch() {
+  pagination.page = 1
+  loadData()
+}
+
+// 重置
+function handleReset() {
+#foreach($column in $columns)
+#if($column.isQuery == 1)
+  searchForm.${column.javaField} = #if($column.javaType == 'String')''#else null#end
+
+#end
+#end
+  handleSearch()
+}
+
+// 分页
+function handlePageChange(page: number) {
+  pagination.page = page
+  loadData()
+}
+
+function handlePageSizeChange(pageSize: number) {
+  pagination.pageSize = pageSize
+  pagination.page = 1
+  loadData()
+}
+
+// 选择
+function handleCheck(keys: Array<string | number>) {
+  selectedIds.value = keys as number[]
+}
+
+// 新增
+function handleAdd() {
+  modalTitle.value = '新增${functionName}'
+  Object.assign(formData, defaultFormData)
+  modalVisible.value = true
+}
+
+// 编辑
+function handleEdit(row: ${className}) {
+  modalTitle.value = '编辑${functionName}'
+  Object.assign(formData, row)
+#foreach($column in $columns)
+#if($column.htmlType == 'datetime')
+#if($column.javaType == 'LocalDate')
+  if (formData.${column.javaField} && typeof formData.${column.javaField} === 'string') {
+    formData.${column.javaField} = new Date(formData.${column.javaField} + 'T00:00:00').getTime()
+  }
+#elseif($column.javaType == 'LocalDateTime')
+  if (formData.${column.javaField} && typeof formData.${column.javaField} === 'string') {
+    formData.${column.javaField} = new Date(formData.${column.javaField}.replace(' ', 'T')).getTime()
+  }
+#end
+#end
+#end
+  modalVisible.value = true
+}
+
+// 提交
+async function handleSubmit() {
+  await formRef.value?.validate()
+  try {
+    const submitData = { ...formData } as ${className}
+#foreach($column in $columns)
+#if($column.htmlType == 'imageUpload')
+    submitData.${column.javaField} = formData.${column.javaField} ?? ''
+#end
+#if($column.htmlType == 'datetime')
+#if($column.javaType == 'LocalDate')
+    if (typeof submitData.${column.javaField} === 'number') {
+      const d = new Date(submitData.${column.javaField})
+      submitData.${column.javaField} = d.toISOString().slice(0, 10)
+    }
+#elseif($column.javaType == 'LocalDateTime')
+    if (typeof submitData.${column.javaField} === 'number') {
+      submitData.${column.javaField} = new Date(submitData.${column.javaField}).toISOString().slice(0, 19).replace('T', ' ')
+    }
+#end
+#end
+#end
+    if (submitData.${pkColumn.javaField}) {
+      await ${classname}Api.update(submitData)
+      message.success('修改成功')
+    } else {
+      await ${classname}Api.create(submitData)
+      message.success('新增成功')
+    }
+    modalVisible.value = false
+    loadData()
+  } catch (error) {
+    // 错误已在拦截器处理
+  }
+}
+
+// 删除
+function handleDelete(row: ${className}) {
+  dialog.warning({
+    title: '提示',
+    content: '确定要删除该记录吗？',
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      try {
+        await ${classname}Api.delete([row.${pkColumn.javaField}!])
+        message.success('删除成功')
+        loadData()
+      } catch (error) {
+        // 错误已在拦截器处理
+      }
+    }
+  })
+}
+
+// 批量删除
+function handleBatchDelete() {
+  dialog.warning({
+    title: '提示',
+#set($dollar = '$')
+    content: `确定要删除选中的 ${dollar}{selectedIds.value.length} 条记录吗？`,
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      try {
+        await ${classname}Api.delete(selectedIds.value)
+        message.success('删除成功')
+        selectedIds.value = []
+        loadData()
+      } catch (error) {
+        // 错误已在拦截器处理
+      }
+    }
+  })
+}
+
+// 导出
+async function handleExport() {
+  try {
+    const params: Record<string, any> = {}
+    if (selectedIds.value.length > 0) params.ids = selectedIds.value
+#foreach($column in $columns)
+#if($column.isQuery == 1)
+#if($column.javaType == 'String')
+    if (searchForm.${column.javaField}) params.${column.javaField} = searchForm.${column.javaField}
+#else
+    if (searchForm.${column.javaField} != null) params.${column.javaField} = searchForm.${column.javaField}
+#end
+#end
+#end
+    const blob = await ${classname}Api.export(params)
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = '${functionName}数据.xlsx'
+    link.click()
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    // 错误已在拦截器处理
+  }
+}
+
+// 下载导入模板
+async function handleDownloadTemplate() {
+  try {
+    const blob = await ${classname}Api.downloadTemplate()
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = '${functionName}导入模板.xlsx'
+    link.click()
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    // 错误已在拦截器处理
+  }
+}
+
+// 导入上传
+async function handleImportUpload({ file }: UploadCustomRequestOptions) {
+  if (!file.file) return
+  try {
+    const result = await ${classname}Api.importData(file.file)
+    if (result.fail > 0) {
+      dialog.warning({
+        title: '导入结果',
+#set($dollar = '$')
+        content: `成功: ${dollar}{result.success} 条，失败: ${dollar}{result.fail} 条\n错误信息: ${dollar}{(result.errors || []).join('\n') || '无'}`,
+        positiveText: '确定'
+      })
+    } else {
+      message.success(`导入成功，共 ${dollar}{result.success} 条数据`)
+      importModalVisible.value = false
+    }
+    loadData()
+  } catch (error) {
+    // 错误已在拦截器处理
+  }
+}
+
+// 加载字典选项
+async function loadDictOptions() {
+#foreach($column in $columns)
+#if($column.dictType && $column.dictType != '' && ($column.htmlType == 'select' || $column.htmlType == 'radio' || $column.htmlType == 'checkbox'))
+  try {
+    const data = await dictDataApi.listByType('${column.dictType}')
+    ${column.javaField}Options.value = data.map(d => ({ label: d.dictLabel, value: #if($column.javaType == 'String')d.dictValue#else(Number(d.dictValue) || d.dictValue)#end }))
+  } catch {}
+#end
+#end
+}
+
+onMounted(() => {
+  loadData()
+  loadDictOptions()
+})
+</script>
+
+<style scoped>
+.search-form {
+  margin-bottom: 16px;
+}
+
+.table-toolbar {
+  margin-bottom: 16px;
+}
+</style>

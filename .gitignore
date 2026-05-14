@@ -1,0 +1,48 @@
+# Node
+node_modules/
+dist/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Maven
+target/
+**/target/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads
+uploads/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# 忽略数据库文件
+*.sql
+
+
+# 忽略 IntelliJ IDEA 的配置
+.idea/
+*.iml
+
+# 忽略 application.yml 的配置
+application.yml
+application-dev.yml
+application-prod.yml
+
+# 忽略 VS Code 的配置
+.vscode/
+.VSCodeCounter/
+.trae/
+.claude/
+.codex/

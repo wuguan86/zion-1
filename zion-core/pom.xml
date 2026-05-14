@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.zion</groupId>
+        <artifactId>zion-admin</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>zion-core</artifactId>
+    <packaging>pom</packaging>
+    <name>Zion Core</name>
+    <description>业务核心层 - 业务模块</description>
+
+    <modules>
+        <module>zion-system</module>
+        <module>zion-file</module>
+        <module>zion-gen</module>
+        <module>zion-message</module>
+        <module>zion-auth</module>
+        <module>zion-biz</module>
+    </modules>
+</project>

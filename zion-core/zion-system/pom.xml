@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.zion</groupId>
+        <artifactId>zion-core</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>zion-system</artifactId>
+    <packaging>jar</packaging>
+    <name>Zion System</name>
+    <description>系统核心模块 - RBAC权限管理、认证鉴权、系统配置</description>
+
+    <dependencies>
+        <!-- 基础设施模块 -->
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-oss</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-crypto</artifactId>
+        </dependency>
+
+        <!-- Sa-Token -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot4-starter</artifactId>
+        </dependency>
+
+        <!-- Hutool -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+
+        <!-- AOP -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aspectj</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <!-- EasyExcel -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-mail</artifactId>
+        </dependency>
+
+        <!-- SSH (Apache MINA SSHD) -->
+        <dependency>
+            <groupId>org.apache.sshd</groupId>
+            <artifactId>sshd-core</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+    </dependencies>
+</project>

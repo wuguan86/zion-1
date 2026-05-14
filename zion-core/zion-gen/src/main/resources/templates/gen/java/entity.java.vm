@@ -1,0 +1,50 @@
+package ${packageName}.entity;
+
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
+#if($hasBigDecimal)
+import java.math.BigDecimal;
+#end
+#if($hasLocalDateTime)
+import java.time.LocalDateTime;
+#end
+#if($hasLocalDate)
+import java.time.LocalDate;
+#end
+import java.io.Serializable;
+
+/**
+ * ${functionName}
+ * 
+ * @author ${author}
+ * @date ${datetime}
+ */
+@Data
+@TableName("${tableName}")
+public class ${className} implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+#set($excelIdx = 0)
+#foreach($column in $columns)
+#if($column.columnComment)
+    /** $column.columnComment */
+#end
+#if($column.isList == 1)
+    @ExcelProperty(value = "${column.columnComment}", index = $excelIdx)
+#set($excelIdx = $excelIdx + 1)
+#end
+#if($column.isPk == 1)
+    @TableId(type = IdType.AUTO)
+#end
+#if($column.javaField == 'createTime')
+    @TableField(fill = FieldFill.INSERT)
+#end
+#if($column.javaField == 'updateTime')
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+#end
+    private $column.javaType $column.javaField;
+
+#end
+}

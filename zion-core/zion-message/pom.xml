@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.zion</groupId>
+        <artifactId>zion-core</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>zion-message</artifactId>
+    <packaging>jar</packaging>
+    <name>Zion Message</name>
+    <description>消息中心模块 - 系统公告、即时通讯</description>
+
+    <dependencies>
+        <!-- 依赖系统模块（使用用户信息） -->
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-system</artifactId>
+        </dependency>
+        <!-- 邮件、短信、推送（通知多渠道） -->
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-sms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-push</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+</project>
