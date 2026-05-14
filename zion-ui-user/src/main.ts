@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-import { createDiscreteApi } from 'naive-ui'
+import naive, { createDiscreteApi } from 'naive-ui'
 import App from './App.vue'
 import router from './router'
 import './styles/index.scss'
@@ -13,6 +13,7 @@ pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 
 app.use(router)
+app.use(naive)
 
 const { message, dialog, loadingBar } = createDiscreteApi(['message', 'dialog', 'loadingBar'])
 window.$message = message

@@ -27,6 +27,10 @@ public class SaTokenConfig implements WebMvcConfigurer {
                             "/api/auth/register",           // 用户注册
                             "/api/auth/captcha",            // 图片验证码
                             "/api/auth/sms-code",           // 短信验证码
+                            "/api/web/auth/login",
+                            "/api/web/auth/sms-code",
+                            "/api/web/auth/wechat/qrcode",
+                            "/api/web/auth/wechat/status",
                             "/api/app/auth/login",          // App端登录
                             "/api/app/auth/sms-code",       // App端短信验证码
                             "/api/wechat/miniprogram/**",   // 微信小程序接口

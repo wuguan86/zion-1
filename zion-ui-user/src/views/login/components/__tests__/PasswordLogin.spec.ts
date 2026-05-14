@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import PasswordLogin from '../PasswordLogin.vue'
@@ -6,7 +6,14 @@ import PasswordLogin from '../PasswordLogin.vue'
 vi.mock('@/api/auth', () => ({
   authApi: {
     getCaptcha: vi.fn().mockResolvedValue({ uuid: 'test-uuid', img: 'data:image/png;base64,xxx' }),
-    login: vi.fn().mockResolvedValue({ token: 'token123', userId: 1, username: 'test', nickname: 'Test', avatar: '' })
+    login: vi.fn().mockResolvedValue({
+      token: 'token123',
+      userId: 1,
+      username: 'test',
+      nickname: 'Test',
+      avatar: ''
+    }),
+    getInfo: vi.fn().mockResolvedValue({ user: null, roles: [], permissions: [] })
   }
 }))
 
@@ -23,9 +30,9 @@ describe('PasswordLogin', () => {
     setActivePinia(createPinia())
   })
 
-  it('renders back button and form', () => {
+  it('renders back button and form title', () => {
     const wrapper = mount(PasswordLogin)
-    expect(wrapper.find('.back-btn').exists()).toBe(true)
+    expect(wrapper.find('.back-btn').text()).toContain('返回选择')
     expect(wrapper.find('h2').text()).toBe('账号密码登录')
   })
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { QrCode } from '@vicons/ionicons5'
 import { authApi } from '@/api/auth'
 import { useLogin } from '@/composables/useLogin'
@@ -8,7 +8,7 @@ const emit = defineEmits<{
   back: []
 }>()
 
-const { loading, errorMsg, login } = useLogin()
+const { errorMsg, login } = useLogin()
 
 const qrUrl = ref('')
 const ticket = ref('')
@@ -26,8 +26,12 @@ onUnmounted(() => {
 })
 
 async function loadQrcode() {
+  stopPolling()
   isExpired.value = false
+  qrUrl.value = ''
+  ticket.value = ''
   statusText.value = '正在加载二维码...'
+
   try {
     const res = await authApi.getWechatQrcode()
     qrUrl.value = res.qrUrl
@@ -35,11 +39,14 @@ async function loadQrcode() {
     statusText.value = '请使用微信扫一扫'
     startPolling()
   } catch (e: any) {
-    statusText.value = '加载二维码失败：' + (e.message || '未知错误')
+    isExpired.value = true
+    statusText.value = `加载二维码失败：${e.message || '未知错误'}`
   }
 }
 
 function startPolling() {
+  if (!ticket.value) return
+
   stopPolling()
   pollTimer = setInterval(async () => {
     try {
@@ -68,7 +75,7 @@ function startPolling() {
           break
       }
     } catch {
-      // ignore poll errors
+      // Temporary polling errors should not tear down a valid QR code.
     }
   }, 2000)
 }
@@ -103,14 +110,14 @@ function stopPolling() {
       <div class="qrcode-wrapper" :class="{ expired: isExpired }">
         <img v-if="qrUrl" :src="qrUrl" alt="微信扫码" class="qrcode-img" />
         <n-spin v-else size="large" />
-        <div v-if="isExpired" class="qrcode-overlay" @click="loadQrcode">
+        <button v-if="isExpired" type="button" class="qrcode-overlay" @click="loadQrcode">
           <n-icon size="32">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
           </n-icon>
           <span>点击刷新</span>
-        </div>
+        </button>
       </div>
       <p class="status-text" :class="{ error: isExpired }">{{ statusText }}</p>
     </div>
@@ -204,7 +211,8 @@ function stopPolling() {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.7);
+  border: 0;
+  background: rgba(255, 255, 255, 0.78);
   cursor: pointer;
   color: #4facfe;
   font-size: 14px;

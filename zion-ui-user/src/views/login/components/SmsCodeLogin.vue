@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onUnmounted, ref } from 'vue'
 import { PhonePortrait } from '@vicons/ionicons5'
 import { authApi } from '@/api/auth'
 import { useLogin } from '@/composables/useLogin'
@@ -19,6 +19,10 @@ const smsLoading = ref(false)
 const countdown = ref(0)
 let timer: ReturnType<typeof setInterval> | null = null
 
+onUnmounted(() => {
+  stopCountdown()
+})
+
 async function sendSmsCode() {
   if (countdown.value > 0 || !form.value.phone) return
   smsLoading.value = true
@@ -28,12 +32,9 @@ async function sendSmsCode() {
     timer = setInterval(() => {
       countdown.value--
       if (countdown.value <= 0) {
-        if (timer) clearInterval(timer)
-        timer = null
+        stopCountdown()
       }
     }, 1000)
-  } catch (e: any) {
-    // error handled by interceptor
   } finally {
     smsLoading.value = false
   }
@@ -45,6 +46,13 @@ async function handleSubmit() {
     phone: form.value.phone,
     smsCode: form.value.smsCode
   })
+}
+
+function stopCountdown() {
+  if (timer) {
+    clearInterval(timer)
+    timer = null
+  }
 }
 </script>
 
@@ -165,6 +173,10 @@ async function handleSubmit() {
   display: flex;
   gap: 12px;
   width: 100%;
+
+  .n-button {
+    min-width: 118px;
+  }
 }
 
 .error-msg {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { LockClosed, Person } from '@vicons/ionicons5'
 import { useCaptcha } from '@/composables/useCaptcha'
 import { useLogin } from '@/composables/useLogin'
@@ -29,7 +29,7 @@ async function handleSubmit() {
     uuid: captchaUuid.value,
     code: form.value.captcha
   })
-  if (!errorMsg.value) {
+  if (errorMsg.value) {
     refreshCaptcha()
   }
 }
@@ -88,10 +88,10 @@ async function handleSubmit() {
             placeholder="验证码"
             size="large"
           />
-          <div class="captcha-img" @click="refreshCaptcha">
+          <button class="captcha-img" type="button" @click="refreshCaptcha">
             <img v-if="captchaImg" :src="captchaImg" alt="验证码" />
             <n-spin v-else size="small" />
-          </div>
+          </button>
         </div>
       </n-form-item>
 
@@ -103,7 +103,7 @@ async function handleSubmit() {
         block
         attr-type="submit"
         :loading="loading"
-        :disabled="!form.username || !form.password"
+        :disabled="!form.username || !form.password || !form.captcha"
       >
         登录
       </n-button>
@@ -167,16 +167,19 @@ async function handleSubmit() {
 .captcha-img {
   width: 120px;
   height: 40px;
+  padding: 0;
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
   flex-shrink: 0;
   border: 1px solid #e5e7eb;
+  background: #fff;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
 
   .n-spin {

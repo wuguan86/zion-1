@@ -88,7 +88,6 @@ const cards = [
   font-weight: 700;
   color: #1a1a2e;
   margin-bottom: 8px;
-  letter-spacing: -0.5px;
 }
 
 .selector-subtitle {

@@ -7,6 +7,13 @@ interface ApiResponse<T = any> {
   data: T
 }
 
+const PUBLIC_WEB_AUTH_URLS = [
+  '/web/auth/login',
+  '/web/auth/sms-code',
+  '/web/auth/wechat/qrcode',
+  '/web/auth/wechat/status'
+]
+
 const service: AxiosInstance = axios.create({
   baseURL: '/api',
   timeout: 30000
@@ -16,13 +23,11 @@ service.interceptors.request.use(
   (config) => {
     const userStore = useUserStore()
     if (userStore.token) {
-      config.headers['Authorization'] = userStore.token
+      config.headers.Authorization = userStore.token
     }
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
 let isLoggingOut = false
@@ -32,9 +37,11 @@ service.interceptors.response.use(
     const res = response.data
 
     if (res.code !== 200) {
-      const isLogoutRequest = response.config.url?.includes('/auth/logout')
+      const requestUrl = response.config.url ?? ''
+      const isLogoutRequest = requestUrl.includes('/auth/logout')
+      const isPublicWebAuthRequest = PUBLIC_WEB_AUTH_URLS.some((url) => requestUrl.includes(url))
 
-      if (res.code === 401 && !isLoggingOut && !isLogoutRequest) {
+      if (res.code === 401 && !isLoggingOut && !isLogoutRequest && !isPublicWebAuthRequest) {
         isLoggingOut = true
         window.$message?.error('登录已过期，请重新登录')
         const userStore = useUserStore()
