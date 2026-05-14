@@ -1,5 +1,6 @@
 package com.zion.auth.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -18,6 +19,7 @@ public enum LoginType {
     private final String code;
     private final String desc;
 
+    @JsonCreator
     public static LoginType of(String code) {
         if (code == null) return PASSWORD;
         for (LoginType type : values()) {

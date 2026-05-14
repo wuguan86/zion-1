@@ -93,19 +93,31 @@ async function aesDecrypt(encryptedData: string, aesKeyBase64: string): Promise<
 // 解密响应数据
 async function decryptResponseData(data: string): Promise<any> {
   const config = await fetchCryptoConfig()
-  
+
   if (!config.aesKey) {
     return data
   }
-  
+
   try {
     const decryptedStr = await aesDecrypt(data, config.aesKey)
     return JSON.parse(decryptedStr)
   } catch (error) {
-    console.error('响应解密失败', error)
-    // 解密失败可能是密钥过期，清除缓存
+    console.error('响应解密失败，尝试刷新密钥后重试', error)
     cryptoConfigCache = null
-    return data
+    const freshConfig = await fetchCryptoConfig()
+
+    if (!freshConfig.aesKey) {
+      return data
+    }
+
+    try {
+      const decryptedStr = await aesDecrypt(data, freshConfig.aesKey)
+      return JSON.parse(decryptedStr)
+    } catch (retryError) {
+      console.error('响应解密重试失败', retryError)
+      cryptoConfigCache = null
+      throw new Error('响应解密失败，请刷新页面重试')
+    }
   }
 }
 

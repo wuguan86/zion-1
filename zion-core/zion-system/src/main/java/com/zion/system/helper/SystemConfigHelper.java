@@ -492,6 +492,13 @@ public class SystemConfigHelper implements com.zion.crypto.CryptoConfigProvider,
     }
 
     /**
+     * 获取短信服务地域
+     */
+    public String getSmsRegion() {
+        return getString(GROUP_SMS, "region", "cn-hangzhou");
+    }
+
+    /**
      * 获取短信AccessKeyId（阿里云）/ SecretId（腾讯云）
      */
     public String getSmsAccessKeyId() {

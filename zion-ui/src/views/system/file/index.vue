@@ -162,8 +162,8 @@
                     <n-checkbox :checked="selectedIds.includes(file.id!)" @update:checked="toggleSelect(file)"/>
                   </div>
                   <div class="file-preview" @click.stop="handlePreview(file)">
-                    <img v-if="isImage(file)" :src="file.url" alt=""/>
-                    <video v-else-if="isVideo(file)" :src="file.url"/>
+                    <img v-if="isImage(file)" :src="fileApi.getPreviewUrl(file.id!)" alt=""/>
+                    <video v-else-if="isVideo(file)" :src="fileApi.getPreviewUrl(file.id!)"/>
                     <div v-else class="file-icon">
                       <n-icon size="48" :color="getFileIconColor(file)">
                         <component :is="getFileIcon(file)"/>
@@ -193,7 +193,7 @@
                     <n-checkbox :checked="selectedIds.includes(file.id!)" @update:checked="toggleSelect(file)"/>
                   </div>
                   <div class="file-preview-small" @click.stop="handlePreview(file)">
-                    <img v-if="isImage(file)" :src="file.url" alt=""/>
+                    <img v-if="isImage(file)" :src="fileApi.getPreviewUrl(file.id!)" alt=""/>
                     <n-icon v-else size="32" :color="getFileIconColor(file)">
                       <component :is="getFileIcon(file)"/>
                     </n-icon>
@@ -608,14 +608,8 @@ async function handleDrop(e: DragEvent) {
 async function handlePreview(file: SysFile) {
   previewFile.value = file
   
-  // PDF、视频、音频等需要内嵌预览的文件，强制使用后端预览接口（避免云存储的attachment头导致下载）
-  if (isPdf(file) || isVideo(file) || isAudio(file)) {
-    previewUrl.value = fileApi.getPreviewUrl(file.id!)
-  } else if (file.url && (file.url.startsWith('http') || file.url.startsWith('/'))) {
-    previewUrl.value = file.url
-  } else {
-    previewUrl.value = fileApi.getPreviewUrl(file.id!)
-  }
+  // 始终使用后端预览接口，确保私有云存储（阿里云OSS等）也能正常预览
+  previewUrl.value = fileApi.getPreviewUrl(file.id!)
   previewText.value = ''
 
   if (isText(file)) {

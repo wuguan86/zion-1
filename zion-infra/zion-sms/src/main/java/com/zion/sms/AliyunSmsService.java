@@ -27,6 +27,7 @@ public class AliyunSmsService implements SmsService {
         String accessKeySecret = configHelper.getSmsAccessKeySecret();
         String signName = configHelper.getSmsSignName();
         String templateCode = configHelper.getSmsTemplateVerifyCode();
+        String region = configHelper.getSmsRegion();
 
         if (accessKeyId.isEmpty() || accessKeySecret.isEmpty()) {
             log.warn("阿里云短信配置不完整，使用控制台打印模式");
@@ -50,6 +51,7 @@ public class AliyunSmsService implements SmsService {
             Config config = new Config()
                     .setAccessKeyId(accessKeyId)
                     .setAccessKeySecret(accessKeySecret)
+                    .setRegionId(region)
                     .setEndpoint("dysmsapi.aliyuncs.com");
             Client client = new Client(config);
 
@@ -94,13 +96,14 @@ public class AliyunSmsService implements SmsService {
         String accessKeyId = configHelper.getSmsAccessKeyId();
         String accessKeySecret = configHelper.getSmsAccessKeySecret();
         String signName = configHelper.getSmsSignName();
+        String region = configHelper.getSmsRegion();
         if (accessKeyId.isEmpty() || accessKeySecret.isEmpty()) {
             log.warn("阿里云短信配置不完整");
             return false;
         }
         try {
             String param = "{\"content\":\"" + (content != null ? content.replace("\"", "\\\"").substring(0, Math.min(100, content.length())) : "") + "\"}";
-            Config config = new Config().setAccessKeyId(accessKeyId).setAccessKeySecret(accessKeySecret).setEndpoint("dysmsapi.aliyuncs.com");
+            Config config = new Config().setAccessKeyId(accessKeyId).setAccessKeySecret(accessKeySecret).setRegionId(region).setEndpoint("dysmsapi.aliyuncs.com");
             Client client = new Client(config);
             SendSmsRequest request = new SendSmsRequest()
                 .setPhoneNumbers(phone)

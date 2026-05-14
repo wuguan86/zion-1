@@ -1,5 +1,6 @@
 package com.zion.auth.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,6 +18,7 @@ public enum ClientType {
     private final String code;
     private final String desc;
 
+    @JsonCreator
     public static ClientType of(String code) {
         if (code == null) return ADMIN;
         for (ClientType type : values()) {

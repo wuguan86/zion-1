@@ -202,6 +202,9 @@
                       <n-form-item label="短信服务商">
                         <n-select v-model:value="configs.sms.provider" :options="smsProviderOptions" style="width: 100%" />
                       </n-form-item>
+                      <n-form-item label="地域">
+                        <n-input v-model:value="configs.sms.region" placeholder="阿里云如 cn-hangzhou，腾讯云如 ap-guangzhou" />
+                      </n-form-item>
                       <n-form-item label="AccessKeyId">
                         <n-input v-model:value="configs.sms.accessKeyId" placeholder="请输入AccessKeyId" />
                       </n-form-item>
@@ -272,8 +275,8 @@
                           <td>{{ log.phone }}</td>
                           <td>{{ log.content }}</td>
                           <td>
-                            <n-tag :type="log.status === 1 ? 'success' : log.status === 2 ? 'error' : 'warning'" size="small">
-                              {{ log.status === 1 ? '成功' : log.status === 2 ? '失败' : '发送中' }}
+                            <n-tag :type="getSmsStatusMeta(log.status).type" size="small">
+                              {{ getSmsStatusMeta(log.status).text }}
                             </n-tag>
                           </td>
                           <td>{{ log.createTime }}</td>
@@ -947,7 +950,7 @@ const configs = reactive<Record<string, any>>({
   password: { minLength: 6, maxLength: 20, requireUppercase: false, requireLowercase: false, requireNumber: false, requireSpecial: false, expireDays: 0 },
   email: { host: '', port: 465, username: '', password: '', fromName: '', ssl: true, enabled: false },
   emailTemplate: { verifyCode: '', resetPassword: '', welcome: '' },
-  sms: { provider: 'aliyun', accessKeyId: '', accessKeySecret: '', signName: '', tencentAppId: '', templateVerifyCode: '', templateResetPassword: '', templateNotice: '', enabled: false },
+  sms: { provider: 'aliyun', region: 'cn-hangzhou', accessKeyId: '', accessKeySecret: '', signName: '', tencentAppId: '', templateVerifyCode: '', templateResetPassword: '', templateNotice: '', enabled: false },
   smsTemplate: { verifyCode: '', resetPassword: '', notification: '' },
   storage: {
     provider: 'local',
@@ -1100,6 +1103,52 @@ const smsLogsSearch = reactive({
   status: null as number | null
 })
 
+type SmsStatusType = 'success' | 'error' | 'warning'
+type SmsLogPayload = Partial<SmsLog> & Record<string, unknown>
+
+function toNumber(value: unknown): number | undefined {
+  if (typeof value === 'number') return value
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value)
+    return Number.isNaN(parsed) ? undefined : parsed
+  }
+  return undefined
+}
+
+function getSmsStatusMeta(statusValue: unknown): { text: string; type: SmsStatusType } {
+  const status = toNumber(statusValue)
+  if (status === 1) return { text: '成功', type: 'success' }
+  if (status === 2) return { text: '失败', type: 'error' }
+  if (status === 0) return { text: '发送中', type: 'warning' }
+  return { text: '未知', type: 'warning' }
+}
+
+function normalizeSmsLog(log: SmsLogPayload): SmsLog {
+  return {
+    id: toNumber(log.id) ?? 0,
+    phone: String(log.phone ?? ''),
+    content: String(log.content ?? ''),
+    smsType: String(log.smsType ?? log.sms_type ?? ''),
+    templateId: String(log.templateId ?? log.template_id ?? ''),
+    provider: String(log.provider ?? ''),
+    status: toNumber(log.status) ?? -1,
+    resultMsg: String(log.resultMsg ?? log.result_msg ?? ''),
+    bizId: String(log.bizId ?? log.biz_id ?? ''),
+    sendTime: String(log.sendTime ?? log.send_time ?? ''),
+    userId: toNumber(log.userId ?? log.user_id) ?? 0,
+    bizType: String(log.bizType ?? log.biz_type ?? ''),
+    ip: String(log.ip ?? ''),
+    createTime: String(log.createTime ?? log.create_time ?? '')
+  }
+}
+
+function normalizeSmsLogs(logs: unknown): SmsLog[] {
+  if (!Array.isArray(logs)) return []
+  return logs
+    .filter((log): log is SmsLogPayload => log !== null && typeof log === 'object' && !Array.isArray(log))
+    .map(normalizeSmsLog)
+}
+
 // 短信记录表格列
 const smsLogsColumns = [
   { title: '手机号', key: 'phone', width: 130 },
@@ -1110,12 +1159,7 @@ const smsLogsColumns = [
     key: 'status',
     width: 80,
     render: (row: SmsLog) => {
-      const statusMap: Record<number, { text: string; type: 'success' | 'error' | 'warning' }> = {
-        1: { text: '成功', type: 'success' },
-        2: { text: '失败', type: 'error' },
-        0: { text: '发送中', type: 'warning' }
-      }
-      const status = statusMap[row.status] || { text: '未知', type: 'warning' }
+      const status = getSmsStatusMeta(row.status)
       return h('span', { class: `status-${status.type}` }, status.text)
     }
   },
@@ -1202,7 +1246,8 @@ async function handleTestSms() {
 // 加载最近5条短信记录
 async function loadRecentSmsLogs() {
   try {
-    recentSmsLogs.value = await configGroupApi.getRecentSmsLogs(5)
+    const logs = await configGroupApi.getRecentSmsLogs(5)
+    recentSmsLogs.value = normalizeSmsLogs(logs)
   } catch (error: any) {
     console.error('加载短信记录失败', error)
   }
@@ -1225,7 +1270,7 @@ async function loadSmsLogs() {
       phone: smsLogsSearch.phone || undefined,
       status: smsLogsSearch.status ?? undefined
     })
-    smsLogsData.value = res.records
+    smsLogsData.value = normalizeSmsLogs(res.records)
     smsLogsPagination.itemCount = res.total
     smsLogsPagination.pageCount = res.pages
   } catch (error: any) {

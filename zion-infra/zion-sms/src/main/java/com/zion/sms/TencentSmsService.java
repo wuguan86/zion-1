@@ -31,6 +31,7 @@ public class TencentSmsService implements SmsService {
         String appId = configHelper.getSmsTencentAppId();
         String signName = configHelper.getSmsSignName();
         String templateId = configHelper.getSmsTemplateVerifyCode();
+        String region = configHelper.getSmsRegion();
 
         if (secretId.isEmpty() || secretKey.isEmpty()) {
             log.warn("腾讯云短信配置不完整，使用控制台打印模式");
@@ -65,7 +66,7 @@ public class TencentSmsService implements SmsService {
             clientProfile.setSignMethod("HmacSHA256");
 
             // 创建短信客户端
-            SmsClient client = new SmsClient(cred, "ap-guangzhou", clientProfile);
+            SmsClient client = new SmsClient(cred, region, clientProfile);
 
             // 构建短信发送请求
             SendSmsRequest request = new SendSmsRequest();
@@ -124,7 +125,7 @@ public class TencentSmsService implements SmsService {
             httpProfile.setEndpoint("sms.tencentcloudapi.com");
             ClientProfile clientProfile = new ClientProfile();
             clientProfile.setHttpProfile(httpProfile);
-            SmsClient client = new SmsClient(cred, "ap-guangzhou", clientProfile);
+            SmsClient client = new SmsClient(cred, configHelper.getSmsRegion(), clientProfile);
             SendSmsResponse response = client.SendSms(request);
             if (response.getSendStatusSet() != null && response.getSendStatusSet().length > 0) {
                 return "Ok".equals(response.getSendStatusSet()[0].getCode());
