@@ -137,12 +137,6 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '在线用户', icon: 'PeopleCircleOutline' }
       },
       {
-        path: 'monitor/job',
-        name: 'MonitorJob',
-        component: () => import('@/views/monitor/job/index.vue'),
-        meta: { title: '定时任务', icon: 'TimerOutline' }
-      },
-      {
         path: 'monitor/cache',
         name: 'MonitorCache',
         component: () => import('@/views/monitor/cache/index.vue'),

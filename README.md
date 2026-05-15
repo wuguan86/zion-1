@@ -43,7 +43,6 @@ Zion Admin 是一个开箱即用的企业级后台管理系统，采用前后端
 | Sa-Token | 1.37.0 | 权限认证框架 |
 | Redis | 7.0+ | 缓存/会话存储 |
 | MySQL | 8.0+ | 数据库 |
-| Quartz | 2.3.2 | 定时任务框架 |
 | Hutool | 5.8.25 | Java 工具类库 |
 | MinIO | - | 对象存储（可选） |
 | 阿里云 OSS | - | 对象存储（可选） |
@@ -118,11 +117,6 @@ zion-admin
 │   ├── zion-app-api         # APP 接口
 │   └── zion-web-api         # 网页端接口
 │
-├── zion-job                 # 定时任务模块
-│   ├── entity               # 任务实体
-│   ├── service              # 任务服务
-│   └── util                 # Quartz 工具类
-│
 ├── zion-starter             # 启动入口
 │   └── resources
 │       ├── application.yml
@@ -175,7 +169,6 @@ zion-admin
 
 ### 系统监控
 - **在线用户** - 当前在线用户查看、强制下线
-- **定时任务** - Quartz 任务调度、执行日志
 - **服务监控** - 服务器 CPU、内存、JVM 信息
 - **缓存监控** - Redis 缓存信息、键值管理
 

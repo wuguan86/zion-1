@@ -183,7 +183,6 @@ import {
   Refresh,
   DocumentText,
   SettingsOutline,
-  TimerOutline,
   ServerOutline,
   RocketOutline,
   SparklesOutline,
@@ -308,13 +307,6 @@ const shortcuts = [
     bgColor: '#EDE9FE'
   },
   {
-    name: '定时任务',
-    path: '/monitor/job',
-    icon: markRaw(TimerOutline),
-    color: '#DC2626',
-    bgColor: '#FEE2E2'
-  },
-  {
     name: '服务监控',
     path: '/monitor/server',
     icon: markRaw(ServerOutline),
@@ -355,9 +347,6 @@ const changelog = [
     type: 'success' as const,
     changes: [
       '数据库连接池升级为 HikariCP',
-      '定时任务新增 Cron 表达式常用预设选择',
-      '定时任务新增调度日志查看功能',
-      '定时任务新增调度统计图表（执行数、成功/失败比例）',
       '缓存监控页面新增 ECharts 统计图（内存、QPS、命中率、连接数）',
       '修复通知类型表单校验问题',
       '优化统计卡片样式（透明背景）'
@@ -435,7 +424,7 @@ const changelog = [
       '新增即时通讯功能（WebSocket私聊/群聊）',
       '完成字典管理和系统配置功能',
       '实现部门和岗位管理',
-      '完成定时任务管理功能'
+      '添加系统监控功能'
     ]
   },
   {

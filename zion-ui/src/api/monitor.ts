@@ -80,65 +80,6 @@ export const onlineApi = {
   }
 }
 
-// ==================== 定时任务 ====================
-export interface SysJob {
-  id?: number
-  jobName: string
-  jobGroup: string
-  invokeTarget: string
-  cronExpression: string
-  misfirePolicy: number
-  concurrent: number
-  status: number
-  remark?: string
-  createTime?: string
-}
-
-export interface SysJobLog {
-  id?: number
-  jobName: string
-  jobGroup: string
-  invokeTarget: string
-  jobMessage: string
-  status: number
-  exceptionInfo: string
-  startTime: string
-  stopTime: string
-}
-
-export const jobApi = {
-  page(params: { page: number; pageSize: number; jobName?: string; jobGroup?: string; status?: number }): Promise<PageResult<SysJob>> {
-    return request({ url: '/monitor/job/page', method: 'get', params })
-  },
-  detail(id: number): Promise<SysJob> {
-    return request({ url: `/monitor/job/${id}`, method: 'get' })
-  },
-  create(data: SysJob): Promise<void> {
-    return request({ url: '/monitor/job', method: 'post', data })
-  },
-  update(data: SysJob): Promise<void> {
-    return request({ url: '/monitor/job', method: 'put', data })
-  },
-  delete(id: number): Promise<void> {
-    return request({ url: `/monitor/job/${id}`, method: 'delete' })
-  },
-  changeStatus(id: number, status: number): Promise<void> {
-    return request({ url: '/monitor/job/changeStatus', method: 'put', data: { id, status } })
-  },
-  run(id: number): Promise<void> {
-    return request({ url: `/monitor/job/run/${id}`, method: 'post' })
-  },
-  logPage(params: { page: number; pageSize: number; jobName?: string; jobGroup?: string; status?: number }): Promise<PageResult<SysJobLog>> {
-    return request({ url: '/monitor/job/log/page', method: 'get', params })
-  },
-  logStatistics(): Promise<{ totalCount: number; successCount: number; failCount: number; dailyStats: Array<{ exec_date: string; success_count: number; fail_count: number }> }> {
-    return request({ url: '/monitor/job/log/statistics', method: 'get' })
-  },
-  cleanLog(): Promise<void> {
-    return request({ url: '/monitor/job/log/clean', method: 'delete' })
-  }
-}
-
 // ==================== 缓存监控 ====================
 export interface CacheStats {
   usedMemory: number

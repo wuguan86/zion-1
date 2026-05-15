@@ -53,11 +53,6 @@
             <groupId>com.zion</groupId>
             <artifactId>zion-sms</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.zion</groupId>
-            <artifactId>zion-job</artifactId>
-        </dependency>
-
         <!-- WebSocket基础设施 -->
         <dependency>
             <groupId>com.zion</groupId>

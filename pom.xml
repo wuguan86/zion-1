@@ -16,7 +16,6 @@
         <module>zion-infra</module>
         <module>zion-core</module>
         <module>zion-api</module>
-        <module>zion-job</module>
         <module>zion-starter</module>
     </modules>
 
@@ -224,12 +223,6 @@
                 <version>${project.version}</version>
             </dependency>
 
-            <!-- 定时任务 -->
-            <dependency>
-                <groupId>com.zion</groupId>
-                <artifactId>zion-job</artifactId>
-                <version>${project.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 

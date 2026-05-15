@@ -2,7 +2,7 @@
 
 ## 项目说明
 
-Zion Admin 是一个前后端分离的后台管理系统。后端采用 Maven 多模块结构，主要技术栈包含 Java、Spring Boot、MyBatis-Plus、Sa-Token、Redis、MySQL、Quartz 等；前端包含 Vue 3、Vite、TypeScript、Naive UI、Pinia、Vue Router、Axios、ECharts 等。
+Zion Admin 是一个前后端分离的后台管理系统。后端采用 Maven 多模块结构，主要技术栈包含 Java、Spring Boot、MyBatis-Plus、Sa-Token、Redis、MySQL 等；前端包含 Vue 3、Vite、TypeScript、Naive UI、Pinia、Vue Router、Axios、ECharts 等。
 
 DK 25 (LTS), Spring Boot 4.x, MyBatis-Plus
 

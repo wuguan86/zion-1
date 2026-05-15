@@ -349,7 +349,6 @@ import {
   LogInOutline,
   PulseOutline,
   PeopleCircleOutline,
-  TimerOutline,
   ServerOutline,
   DesktopOutline,
   SettingsSharp,
@@ -668,7 +667,6 @@ function getIconName(key: string): string {
     '/message/notice': 'NotificationsOutline',
     '/message/chat': 'ChatbubbleOutline',
     '/monitor/online': 'PeopleCircleOutline',
-    '/monitor/job': 'TimerOutline',
     '/monitor/cache': 'ServerOutline',
     '/monitor/server': 'DesktopOutline'
   }
@@ -723,7 +721,6 @@ const iconMap: Record<string, any> = {
   LogInOutline,
   PulseOutline,
   PeopleCircleOutline,
-  TimerOutline,
   ServerOutline,
   DesktopOutline,
   SettingsSharp,
