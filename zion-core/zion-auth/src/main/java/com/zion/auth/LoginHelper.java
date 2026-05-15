@@ -3,6 +3,7 @@ package com.zion.auth;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import com.zion.system.entity.SysUser;
+import com.zion.system.entity.WebUser;
 import com.zion.system.service.SysLoginLogService;
 import com.zion.system.helper.SystemConfigHelper;
 import com.zion.system.util.IpUtils;
@@ -55,6 +56,40 @@ public class LoginHelper {
         loginLogService.recordLog(user.getUsername(), 0, "登录成功", info.ip, info.browser, info.os);
 
         // 构建结果
+        return LoginResult.of(
+                StpUtil.getTokenValue(),
+                user.getId(),
+                user.getUsername(),
+                user.getNickname(),
+                user.getAvatar()
+        );
+    }
+
+    /**
+     * 执行PC用户端登录并构建结果
+     */
+    public LoginResult doWebLogin(WebUser user) {
+        RequestInfo info = getRequestInfo();
+
+        if (configHelper.isSingleLogin()) {
+            StpUtil.logout(user.getId());
+        }
+
+        StpUtil.login(user.getId());
+
+        SaSession session = StpUtil.getSession();
+        session.set("loginName", user.getNickname() != null ? user.getNickname() : user.getUsername());
+        session.set("userSource", "web");
+        session.set("ipaddr", info.ip);
+        session.set("loginLocation", IpUtils.getAddressByIp(info.ip));
+        session.set("browser", info.browser);
+        session.set("os", info.os);
+        session.set("status", 1);
+        session.set("loginTime", System.currentTimeMillis());
+
+        loginLogService.recordLog(user.getNickname() != null ? user.getNickname() : user.getUsername(),
+                0, "PC用户端登录成功", info.ip, info.browser, info.os);
+
         return LoginResult.of(
                 StpUtil.getTokenValue(),
                 user.getId(),

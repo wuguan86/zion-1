@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import type { LoginType } from '@/types/login'
 import { Key, PhonePortrait, QrCode } from '@vicons/ionicons5'
 
@@ -9,6 +11,9 @@ defineProps<{
 const emit = defineEmits<{
   select: [type: LoginType]
 }>()
+
+const route = useRoute()
+const wechatError = computed(() => (route?.query.wechatError as string) || '')
 
 const cards = [
   {
@@ -27,8 +32,8 @@ const cards = [
   },
   {
     type: 'wechat' as LoginType,
-    title: '微信扫码',
-    desc: '微信扫一扫安全登录',
+    title: '微信公众号',
+    desc: '使用微信公众号授权登录',
     icon: QrCode,
     color: '#4facfe'
   }
@@ -68,6 +73,8 @@ const cards = [
         </div>
       </div>
     </div>
+
+    <p v-if="wechatError" class="error-msg">{{ wechatError }}</p>
   </div>
 </template>
 
@@ -158,5 +165,12 @@ const cards = [
 .card-arrow {
   color: #d1d5db;
   flex-shrink: 0;
+}
+
+.error-msg {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 16px;
+  text-align: center;
 }
 </style>

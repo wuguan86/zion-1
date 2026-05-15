@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +35,8 @@ public class WechatMpService {
     private static final String MENU_CREATE_URL = "https://api.weixin.qq.com/cgi-bin/menu/create";
     private static final String MENU_GET_URL = "https://api.weixin.qq.com/cgi-bin/menu/get";
     private static final String MENU_DELETE_URL = "https://api.weixin.qq.com/cgi-bin/menu/delete";
+    private static final String QR_CODE_CREATE_URL = "https://api.weixin.qq.com/cgi-bin/qrcode/create";
+    private static final String QR_CODE_SHOW_URL = "https://mp.weixin.qq.com/cgi-bin/showqrcode";
 
     /**
      * 验证消息签名
@@ -68,7 +72,7 @@ public class WechatMpService {
 
         return OAUTH_AUTHORIZE_URL +
                 "?appid=" + appId +
-                "&redirect_uri=" + cn.hutool.core.net.URLEncodeUtil.encode(redirectUri) +
+                "&redirect_uri=" + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8) +
                 "&response_type=code" +
                 "&scope=" + scope +
                 "&state=" + state +
@@ -88,7 +92,6 @@ public class WechatMpService {
         if (appId == null || appId.isEmpty() || appSecret == null || appSecret.isEmpty()) {
             throw new RuntimeException("公众号配置未完成，请先配置AppID和AppSecret");
         }
-
         // 获取access_token
         Map<String, Object> params = new HashMap<>();
         params.put("appid", appId);
@@ -148,7 +151,6 @@ public class WechatMpService {
         if (appId == null || appId.isEmpty() || appSecret == null || appSecret.isEmpty()) {
             throw new RuntimeException("公众号配置未完成");
         }
-
         Map<String, Object> params = new HashMap<>();
         params.put("appid", appId);
         params.put("secret", appSecret);
@@ -231,6 +233,32 @@ public class WechatMpService {
         log.info("公众号菜单删除成功");
     }
 
+    public MpQrCode createTemporaryQrCode(String scene, int expireSeconds) {
+        String accessToken = getAccessToken();
+        String url = QR_CODE_CREATE_URL + "?access_token=" + accessToken;
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("expire_seconds", expireSeconds);
+        body.put("action_name", "QR_STR_SCENE");
+        body.put("action_info", Map.of("scene", Map.of("scene_str", scene)));
+
+        String response = HttpUtil.post(url, JSONUtil.toJsonStr(body));
+        JSONObject json = JSONUtil.parseObj(response);
+
+        if (json.containsKey("errcode") && json.getInt("errcode") != 0) {
+            log.error("创建公众号临时二维码失败: {}", response);
+            throw new RuntimeException("创建公众号临时二维码失败: " + json.getStr("errmsg"));
+        }
+
+        String ticket = json.getStr("ticket");
+        MpQrCode qrCode = new MpQrCode();
+        qrCode.setTicket(ticket);
+        qrCode.setUrl(json.getStr("url"));
+        qrCode.setExpireSeconds(json.getInt("expire_seconds", expireSeconds));
+        qrCode.setQrCodeUrl(QR_CODE_SHOW_URL + "?ticket=" + URLEncoder.encode(ticket, StandardCharsets.UTF_8));
+        return qrCode;
+    }
+
     /**
      * 处理微信消息回调
      *
@@ -263,5 +291,13 @@ public class WechatMpService {
         private String nickname;
         private String headImgUrl;
         private Integer sex;
+    }
+
+    @Data
+    public static class MpQrCode {
+        private String ticket;
+        private String url;
+        private String qrCodeUrl;
+        private Integer expireSeconds;
     }
 }

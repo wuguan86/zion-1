@@ -114,7 +114,10 @@ public class DecryptRequestBodyAdvice extends RequestBodyAdviceAdapter {
         if (attributes == null) return false;
         String path = attributes.getRequest().getRequestURI();
         if (path == null) return false;
-        return path.startsWith("/api/mall/") || path.startsWith("/api/wechat/miniprogram/");
+        return path.startsWith("/api/mall/") ||
+                path.startsWith("/api/web/auth/wechat/qr/") ||
+                path.startsWith("/api/wechat/mp/server") ||
+                path.startsWith("/api/wechat/miniprogram/");
     }
 
     private static class DecryptedHttpInputMessage implements HttpInputMessage {

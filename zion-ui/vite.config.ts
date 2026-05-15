@@ -16,6 +16,7 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    allowedHosts: ['wuguan.vip.cpolar.cn'],
     proxy: {
       '/api': {
         target: 'http://localhost:8080',

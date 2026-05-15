@@ -1,48 +1,62 @@
-# Node
+# --- Node / Vue3 ---
 node_modules/
 dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# IDE
+# --- IDE / Editor ---
 .idea/
 *.iml
+*.iws
 .vscode/
+.classpath
+.project
+.settings/
+bin/
+out/
 
-# Maven
+# --- Maven / Build ---
 target/
 **/target/
+.mvn/wrapper/maven-wrapper.jar
 
-# Logs
+# --- Logs ---
 *.log
 logs/
 
-# OS
+# --- OS ---
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Uploads
-uploads/
-
-# Env
+# --- Security / Env ---
 .env
-.env.local
 .env.*.local
+*.jks
+*.keystore
+*.p12
 
-# 忽略数据库文件
+# --- App Specific ---
+uploads/
+temp/
 *.sql
 
-
-# 忽略 IntelliJ IDEA 的配置
-.idea/
-*.iml
-
-# 忽略 application.yml 的配置
-application.yml
+# --- SpringBoot Config ---
+# 建议保留 application.yml 作为模板，忽略包含敏感信息的本地/生产配置
 application-dev.yml
 application-prod.yml
 
-# 忽略 VS Code 的配置
-.vscode/
-.VSCodeCounter/
+# --- AI Tools ---
 .trae/
 .claude/
 .codex/
+.VSCodeCounter/
+
+
+# 忽略后端项目中的静态资源编译结果
+**/src/main/resources/static/
+**/src/main/resources/static-user/

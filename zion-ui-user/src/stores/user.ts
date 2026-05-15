@@ -17,11 +17,22 @@ export const useUserStore = defineStore('user', () => {
 
   async function login(loginData: { loginType: string } & Record<string, any>) {
     const res = await authApi.login(loginData)
+    await applyLoginResult(res)
+    return res
+  }
+
+  async function applyLoginResult(res: {
+    token: string
+    userId: number
+    username?: string
+    nickname?: string
+    avatar?: string
+  }) {
     token.value = res.token
     user.value = {
       id: res.userId,
-      username: res.username,
-      nickname: res.nickname,
+      username: res.username || '',
+      nickname: res.nickname || '',
       avatar: res.avatar || '',
       email: '',
       phone: '',
@@ -73,6 +84,7 @@ export const useUserStore = defineStore('user', () => {
     nickname,
     avatar,
     login,
+    applyLoginResult,
     getInfo,
     logout
   }

@@ -1,5 +1,5 @@
 import { request } from '@/utils/request'
-import type { LoginResult, CaptchaResult, QrcodeResult, ScanStatusResult } from '@/types/login'
+import type { LoginResult, CaptchaResult, WechatQrLoginSession, WechatQrLoginStatus } from '@/types/login'
 
 export const authApi = {
   /** 获取图形验证码 */
@@ -27,13 +27,18 @@ export const authApi = {
     return request({ url: '/web/auth/info', method: 'get' })
   },
 
-  /** 获取微信扫码二维码 */
-  getWechatQrcode(): Promise<QrcodeResult> {
-    return request({ url: '/web/auth/wechat/qrcode', method: 'get' })
+  /** 获取微信公众号授权URL */
+  getWechatAuthorizeUrl(): Promise<{ authorizeUrl: string }> {
+    return request({ url: '/web/auth/wechat/authorize', method: 'get' })
   },
 
-  /** 查询微信扫码状态 */
-  getWechatStatus(ticket: string): Promise<ScanStatusResult> {
-    return request({ url: '/web/auth/wechat/status', method: 'get', params: { ticket } })
+  /** 创建电脑端微信公众号扫码登录会话 */
+  createWechatQrLoginSession(): Promise<WechatQrLoginSession> {
+    return request({ url: '/web/auth/wechat/qr/session', method: 'post' })
+  },
+
+  /** 查询电脑端微信公众号扫码登录状态 */
+  pollWechatQrLogin(sessionId: string): Promise<WechatQrLoginStatus> {
+    return request({ url: '/web/auth/wechat/qr/poll', method: 'get', params: { sessionId } })
   }
 }

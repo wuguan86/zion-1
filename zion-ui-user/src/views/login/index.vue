@@ -1,21 +1,41 @@
 <script setup lang="ts">
-import { ref, type Component } from 'vue'
+import { computed, ref, type Component } from 'vue'
+import { useRoute } from 'vue-router'
 import type { LoginType } from '@/types/login'
 import LoginSelector from './components/LoginSelector.vue'
 import PasswordLogin from './components/PasswordLogin.vue'
 import SmsCodeLogin from './components/SmsCodeLogin.vue'
-import WechatQrcodeLogin from './components/WechatQrcodeLogin.vue'
+import WechatMpLogin from './components/WechatMpLogin.vue'
 
 type Step = 'select' | 'form'
 
 const currentStep = ref<Step>('select')
 const activeType = ref<LoginType>('password')
 const loginLoading = ref(false)
+const route = useRoute()
 
 const formComponents: Record<LoginType, Component> = {
   password: PasswordLogin,
   sms: SmsCodeLogin,
-  wechat: WechatQrcodeLogin
+  wechat: WechatMpLogin
+}
+
+const wechatCallbackUrl = computed(() => {
+  const code = route.query.code
+  if (!code || Array.isArray(code)) {
+    return ''
+  }
+
+  const params = new URLSearchParams({ code })
+  const state = route.query.state
+  if (typeof state === 'string' && state) {
+    params.set('state', state)
+  }
+  return `/api/web/auth/wechat/callback?${params.toString()}`
+})
+
+if (wechatCallbackUrl.value) {
+  window.location.href = wechatCallbackUrl.value
 }
 
 function handleSelect(type: LoginType) {

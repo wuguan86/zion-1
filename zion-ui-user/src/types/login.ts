@@ -34,12 +34,13 @@ export interface CaptchaResult {
   img: string
 }
 
-export interface QrcodeResult {
-  ticket: string
-  qrUrl: string
-  expireSeconds: number
+export interface WechatQrLoginSession {
+  sessionId: string
+  qrCodeUrl: string
+  expiresIn: number
 }
 
-export interface ScanStatusResult {
-  status: 'pending' | 'scanned' | 'confirmed' | 'cancelled' | 'expired'
+export interface WechatQrLoginStatus {
+  status: 'WAITING' | 'CONFIRMED' | 'EXPIRED'
+  loginResult?: LoginResult
 }

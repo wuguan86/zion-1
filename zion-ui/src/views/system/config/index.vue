@@ -532,13 +532,13 @@
                 <n-form-item label="EncodingAESKey">
                   <n-input v-model:value="configs.wechatMp.aesKey" placeholder="请输入消息加解密密钥（可选）" />
                 </n-form-item>
-                <n-form-item label="回调URL">
+                <n-form-item label="服务器回调URL">
                   <n-input v-model:value="configs.wechatMp.callbackUrl" placeholder="如: https://api.example.com/api/wechat/callback" />
-                  <span class="form-hint">需配置到微信公众号后台</span>
+                  <span class="form-hint">公众号服务器消息回调，用于验签、菜单事件和消息接收</span>
                 </n-form-item>
                 <n-form-item label="OAuth回调URL">
-                  <n-input v-model:value="configs.wechatMp.oauthRedirectUrl" placeholder="如: https://www.example.com/login" />
-                  <span class="form-hint">网页授权登录后的回调地址</span>
+                  <n-input v-model:value="configs.wechatMp.oauthRedirectUrl" placeholder="如: https://api.example.com/api/web/auth/wechat/callback 或 http://localhost:3001/login" />
+                  <span class="form-hint">微信网页授权回调。推荐填后端 /api/web/auth/wechat/callback；本地调试也支持填前台 /login</span>
                 </n-form-item>
 
                 <n-divider>自定义菜单配置</n-divider>
@@ -688,9 +688,9 @@
 
                 <n-divider />
                 <n-alert type="info" title="使用说明" :bordered="false">
-                  <p>1. 公众号OAuth登录: 先调用 GET /api/wechat/mp/oauth-url 获取授权链接</p>
-                  <p>2. 用户授权后回调到 oauthRedirectUrl，携带 code 参数</p>
-                  <p>3. 前端用 code 调用 POST /api/wechat/mp/oauth-login 完成登录</p>
+                  <p>1. 前台点击微信登录后调用 GET /api/web/auth/wechat/authorize 获取授权链接</p>
+                  <p>2. 用户授权后微信回调到 OAuth回调URL，携带 code 和 state 参数</p>
+                  <p>3. 后端 /api/web/auth/wechat/callback 会完成登录并跳转到前台 /home</p>
                 </n-alert>
               </n-form>
             </template>

@@ -10,8 +10,10 @@ interface ApiResponse<T = any> {
 const PUBLIC_WEB_AUTH_URLS = [
   '/web/auth/login',
   '/web/auth/sms-code',
-  '/web/auth/wechat/qrcode',
-  '/web/auth/wechat/status'
+  '/web/auth/wechat/authorize',
+  '/web/auth/wechat/callback',
+  '/web/auth/wechat/qr/session',
+  '/web/auth/wechat/qr/poll'
 ]
 
 const service: AxiosInstance = axios.create({
@@ -25,6 +27,7 @@ service.interceptors.request.use(
     if (userStore.token) {
       config.headers.Authorization = userStore.token
     }
+
     return config
   },
   (error) => Promise.reject(error)
@@ -35,9 +38,9 @@ let isLoggingOut = false
 service.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => {
     const res = response.data
+    const requestUrl = response.config.url ?? ''
 
     if (res.code !== 200) {
-      const requestUrl = response.config.url ?? ''
       const isLogoutRequest = requestUrl.includes('/auth/logout')
       const isPublicWebAuthRequest = PUBLIC_WEB_AUTH_URLS.some((url) => requestUrl.includes(url))
 

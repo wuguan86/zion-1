@@ -31,6 +31,9 @@ public class StpInterfaceImpl implements StpInterface {
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
         SaSession session = StpUtil.getSessionByLoginId(loginId);
+        if ("web".equals(session.get("userSource"))) {
+            return List.of();
+        }
         return session.get(CACHE_KEY_PERMISSIONS, () -> {
             log.debug("从数据库加载用户权限: userId={}", loginId);
             return userService.getPermissions(Long.parseLong(loginId.toString()));
@@ -43,6 +46,9 @@ public class StpInterfaceImpl implements StpInterface {
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
         SaSession session = StpUtil.getSessionByLoginId(loginId);
+        if ("web".equals(session.get("userSource"))) {
+            return List.of();
+        }
         return session.get(CACHE_KEY_ROLES, () -> {
             log.debug("从数据库加载用户角色: userId={}", loginId);
             return userService.getRoleCodes(Long.parseLong(loginId.toString()));
