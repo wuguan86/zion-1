@@ -9,6 +9,7 @@ export const useUserStore = defineStore('user', () => {
   const user = ref<UserInfo | null>(null)
   const roles = ref<string[]>([])
   const permissions = ref<string[]>([])
+  const infoLoading = ref(false)
 
   const isLogin = computed(() => !!token.value)
   const nickname = computed(() => user.value?.nickname || user.value?.username || '')
@@ -32,11 +33,17 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function getInfo() {
-    const res = await authApi.getInfo()
-    user.value = res.user
-    roles.value = res.roles
-    permissions.value = res.permissions
-    return res
+    if (infoLoading.value) return
+    infoLoading.value = true
+    try {
+      const res = await authApi.getInfo()
+      user.value = res.user
+      roles.value = res.roles
+      permissions.value = res.permissions
+      return res
+    } finally {
+      infoLoading.value = false
+    }
   }
 
   async function logout() {

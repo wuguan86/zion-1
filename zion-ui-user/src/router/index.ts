@@ -46,7 +46,7 @@ router.beforeEach((to, _from, next) => {
 
   if (!userStore.user) {
     userStore.getInfo()
-      .then(() => next({ ...to, replace: true }))
+      .then(() => next())
       .catch(() => {
         userStore.logout()
         next('/login')
