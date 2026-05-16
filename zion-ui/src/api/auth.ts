@@ -155,6 +155,18 @@ export const authApi = {
     })
   },
 
+  // 上传并更新当前用户头像
+  uploadAvatar(file: File): Promise<string> {
+    const formData = new FormData()
+    formData.append('file', file)
+    return request({
+      url: '/auth/profile/avatar',
+      method: 'post',
+      data: formData,
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+  },
+
   // 修改密码（自动加密密码）
   async updatePassword(data: { oldPassword: string; newPassword: string }): Promise<void> {
     const encryptedData = await encryptPasswordFields(data, ['oldPassword', 'newPassword'])

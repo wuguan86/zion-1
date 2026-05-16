@@ -132,8 +132,13 @@ public class SysFileServiceImpl implements SysFileService {
             sysFile.setCreateTime(LocalDateTime.now());
 
             fileMapper.insert(sysFile);
+            String publicUrl = resolvePublicUrl(url, sysFile.getId());
+            if (!publicUrl.equals(url)) {
+                sysFile.setUrl(publicUrl);
+                fileMapper.updateById(sysFile);
+            }
 
-            log.info("文件上传成功: {} -> {}", originalName, url);
+            log.info("文件上传成功: {} -> {}", originalName, sysFile.getUrl());
             return sysFile;
         } catch (IOException e) {
             log.error("文件上传失败", e);
@@ -241,5 +246,25 @@ public class SysFileServiceImpl implements SysFileService {
      */
     private String generatePath() {
         return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+    }
+
+    /**
+     * 生成前端可直接访问的文件地址。
+     * 对象存储未配置访问域名时，存储实现会返回 /images/... 这类对象路径；
+     * 该路径不能通过前端服务直接访问，因此统一兜底为后端预览接口。
+     */
+    static String resolvePublicUrl(String url, Long fileId) {
+        if (!StringUtils.hasText(url)) {
+            return url;
+        }
+
+        String trimmedUrl = url.trim();
+        if (trimmedUrl.matches("^(?i)(https?:)?//.*")
+                || trimmedUrl.startsWith("/api/files/")
+                || trimmedUrl.startsWith("/api/sys/file/")) {
+            return trimmedUrl;
+        }
+
+        return "/api/sys/file/preview/" + fileId;
     }
 }

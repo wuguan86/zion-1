@@ -2,6 +2,8 @@ package com.zion.file.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.ser.std.ToStringSerializer;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -17,6 +19,7 @@ public class SysFile implements Serializable {
      * 文件ID
      */
     @TableId(type = IdType.ASSIGN_ID)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -67,6 +70,7 @@ public class SysFile implements Serializable {
     /**
      * 分组ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long groupId;
 
     /**

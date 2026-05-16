@@ -7,14 +7,16 @@
         <n-card class="user-card" :bordered="false">
           <div class="avatar-section">
             <div class="avatar-wrapper" @click="triggerUpload">
-              <n-avatar
-                round
-                :size="100"
-                :src="avatarDisplaySrc"
-                class="profile-avatar"
-              >
-                {{ formData.nickname?.charAt(0) || 'U' }}
-              </n-avatar>
+              <div class="profile-avatar">
+                <img
+                  v-if="avatarDisplaySrc && !avatarLoadFailed"
+                  :src="avatarDisplaySrc"
+                  :alt="formData.nickname || '用户头像'"
+                  class="profile-avatar-img"
+                  @error="handleAvatarError"
+                />
+                <span v-else>{{ formData.nickname?.charAt(0) || 'U' }}</span>
+              </div>
               <div class="avatar-overlay">
                 <n-icon size="22"><CameraOutline /></n-icon>
               </div>
@@ -141,11 +143,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useMessage, type FormInst, type FormRules } from 'naive-ui'
 import { CameraOutline, PersonOutline, CreateOutline } from '@vicons/ionicons5'
 import { authApi, type ProfileInfo } from '@/api/auth'
-import { fileApi } from '@/api/system'
 import { useUserStore } from '@/stores/user'
 import { formatDateTime } from '@/utils/datetime'
 import { normalizeFileUrl } from '@/utils/fileUrl'
@@ -158,6 +159,7 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
 const loading = ref(false)
 const saving = ref(false)
 const avatarPreviewUrl = ref('')
+const avatarLoadFailed = ref(false)
 
 const formData = ref<Partial<ProfileInfo>>({
   id: 0,
@@ -179,6 +181,10 @@ const formData = ref<Partial<ProfileInfo>>({
 const originalData = ref<Partial<ProfileInfo>>({})
 
 const avatarDisplaySrc = computed(() => avatarPreviewUrl.value || normalizeFileUrl(formData.value.avatar) || undefined)
+
+watch(avatarDisplaySrc, () => {
+  avatarLoadFailed.value = false
+})
 
 const rules: FormRules = {
   nickname: [
@@ -214,6 +220,10 @@ function triggerUpload() {
   fileInputRef.value?.click()
 }
 
+function handleAvatarError() {
+  avatarLoadFailed.value = true
+}
+
 function clearAvatarPreviewUrl() {
   if (avatarPreviewUrl.value) {
     URL.revokeObjectURL(avatarPreviewUrl.value)
@@ -221,8 +231,23 @@ function clearAvatarPreviewUrl() {
   }
 }
 
-function resolveUploadedImageUrl(result: { url?: string; filePath?: string }): string {
-  return result.url || result.filePath || ''
+function applyProfileData(data: ProfileInfo, fallbackAvatar = '') {
+  formData.value = {
+    id: data.id,
+    username: data.username,
+    nickname: data.nickname,
+    avatar: data.avatar || fallbackAvatar,
+    email: data.email || '',
+    phone: data.phone || '',
+    gender: data.gender ?? 0,
+    status: data.status ?? 1,
+    deptId: data.deptId,
+    deptName: data.deptName || '',
+    postNames: data.postNames || '',
+    remark: data.remark || '',
+    userType: data.userType || '',
+    createTime: data.createTime || ''
+  }
 }
 
 async function handleFileChange(e: Event) {
@@ -248,17 +273,17 @@ async function handleFileChange(e: Event) {
 
   try {
     message.loading('头像上传中...')
-    const result = await fileApi.uploadImage(file)
-    const avatarUrl = resolveUploadedImageUrl(result)
+    const avatarUrl = normalizeFileUrl(await authApi.uploadAvatar(file))
     if (!avatarUrl) {
       throw new Error('上传接口未返回头像地址')
     }
 
     formData.value.avatar = avatarUrl
-    await authApi.updateProfile({ avatar: avatarUrl })
     await userStore.getInfo()
+    const latestProfile = await authApi.getProfile()
+    applyProfileData(latestProfile, avatarUrl)
     originalData.value = {
-      ...originalData.value,
+      ...formData.value,
       avatar: avatarUrl
     }
     clearAvatarPreviewUrl()
@@ -277,22 +302,7 @@ async function loadProfile() {
   try {
     loading.value = true
     const data = await authApi.getProfile()
-    formData.value = {
-      id: data.id,
-      username: data.username,
-      nickname: data.nickname,
-      avatar: data.avatar || '',
-      email: data.email || '',
-      phone: data.phone || '',
-      gender: data.gender ?? 0,
-      status: data.status ?? 1,
-      deptId: data.deptId,
-      deptName: data.deptName || '',
-      postNames: data.postNames || '',
-      remark: data.remark || '',
-      userType: data.userType || '',
-      createTime: data.createTime || ''
-    }
+    applyProfileData(data)
     // 保存原始数据用于重置
     originalData.value = { ...formData.value }
   } catch (error) {
@@ -402,8 +412,25 @@ onBeforeUnmount(() => {
 }
 
 .profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
   border: 3px solid #f0f0f0;
+  background: #c9c9c9;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  overflow: hidden;
   transition: transform 0.3s;
+}
+
+.profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .avatar-overlay {

@@ -1,6 +1,9 @@
 package com.zion.admin.controller.file;
 
+import com.zion.oss.FileStorage;
+import com.zion.oss.LocalFileStorage;
 import com.zion.system.helper.SystemConfigHelper;
+import com.zion.system.storage.FileStorageFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,7 @@ import java.nio.file.Paths;
 public class FileAccessController {
 
     private final SystemConfigHelper configHelper;
+    private final FileStorageFactory storageFactory;
 
     /**
      * 访问本地文件
@@ -39,6 +43,10 @@ public class FileAccessController {
         String requestUri = request.getRequestURI();
         int filesIndex = requestUri.indexOf("/files/");
         String filePath = (filesIndex >= 0) ? requestUri.substring(filesIndex + "/files".length()) : requestUri;
+
+        if (!LocalFileStorage.STORAGE_TYPE.equals(configHelper.getStorageProvider())) {
+            return getCurrentStorageFile(filePath);
+        }
 
         // 获取本地存储路径
         String basePath = configHelper.getStorageLocalPath();
@@ -69,6 +77,28 @@ public class FileAccessController {
         } catch (IOException e) {
             log.error("读取文件失败: {}", filePath, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * 非本地存储通过当前存储策略读取文件，用于兼容历史返回的 /images/... 访问路径。
+     */
+    private ResponseEntity<byte[]> getCurrentStorageFile(String filePath) {
+        String storagePath = filePath.startsWith("/") ? filePath.substring(1) : filePath;
+        try {
+            FileStorage storage = storageFactory.getStorage();
+            byte[] bytes = storage.getFile(storagePath);
+            String contentType = Files.probeContentType(Paths.get(storagePath));
+            if (contentType == null) {
+                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+            }
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, contentType)
+                    .body(bytes);
+        } catch (Exception e) {
+            log.error("读取当前存储文件失败: {}", storagePath, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }

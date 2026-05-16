@@ -162,8 +162,8 @@
                     <n-checkbox :checked="selectedIds.includes(file.id!)" @update:checked="toggleSelect(file)"/>
                   </div>
                   <div class="file-preview" @click.stop="handlePreview(file)">
-                    <img v-if="isImage(file)" :src="fileApi.getPreviewUrl(file.id!)" alt=""/>
-                    <video v-else-if="isVideo(file)" :src="fileApi.getPreviewUrl(file.id!)"/>
+                    <img v-if="isImage(file)" :src="getFileAccessUrl(file)" alt=""/>
+                    <video v-else-if="isVideo(file)" :src="getFileAccessUrl(file)"/>
                     <div v-else class="file-icon">
                       <n-icon size="48" :color="getFileIconColor(file)">
                         <component :is="getFileIcon(file)"/>
@@ -193,7 +193,7 @@
                     <n-checkbox :checked="selectedIds.includes(file.id!)" @update:checked="toggleSelect(file)"/>
                   </div>
                   <div class="file-preview-small" @click.stop="handlePreview(file)">
-                    <img v-if="isImage(file)" :src="fileApi.getPreviewUrl(file.id!)" alt=""/>
+                    <img v-if="isImage(file)" :src="getFileAccessUrl(file)" alt=""/>
                     <n-icon v-else size="32" :color="getFileIconColor(file)">
                       <component :is="getFileIcon(file)"/>
                     </n-icon>
@@ -333,6 +333,7 @@ import {fileApi, fileGroupApi, type SysFile, type SysFileGroup} from '@/api/syst
 import {useUserStore} from '@/stores/user'
 import {useThemeStore} from '@/stores/theme'
 import {formatDateTime} from '@/utils/datetime'
+import {normalizeFileUrl} from '@/utils/fileUrl'
 
 const message = useMessage()
 const dialog = useDialog()
@@ -359,7 +360,7 @@ const activeType = ref('image')
 // 分组相关
 const groups = ref<SysFileGroup[]>([])
 const ungroupedCount = ref(0)
-const activeGroupId = ref<number | null>(-1) // -1 表示全部
+const activeGroupId = ref<string | number | null>(-1) // -1 表示全部
 
 // 视图模式
 const viewMode = ref<'list' | 'grid'>('grid')
@@ -370,7 +371,7 @@ const searchName = ref('')
 // 文件列表
 const files = ref<SysFile[]>([])
 const loading = ref(false)
-const selectedIds = ref<number[]>([])
+const selectedIds = ref<Array<string | number>>([])
 const pagination = reactive({
   page: 1,
   pageSize: 20,
@@ -385,7 +386,7 @@ const groupForm = reactive({name: ''})
 
 // 移动弹窗
 const showMoveModal = ref(false)
-const moveTargetGroupId = ref<number | null>(null)
+const moveTargetGroupId = ref<string | number | null>(null)
 
 // 重命名弹窗
 const showRenameModal = ref(false)
@@ -472,7 +473,7 @@ function handlePageSizeChange(pageSize: number) {
 }
 
 // 选择分组
-function selectGroup(groupId: number | null) {
+function selectGroup(groupId: string | number | null) {
   activeGroupId.value = groupId
   pagination.page = 1
   loadFiles()
@@ -553,7 +554,7 @@ async function handleSaveGroup() {
 }
 
 // 获取当前上传目标分组ID
-function getUploadGroupId(): number | null {
+function getUploadGroupId(): string | number | null {
   if (activeGroupId.value === -1 || activeGroupId.value === null) {
     return null
   }
@@ -609,8 +610,7 @@ async function handleDrop(e: DragEvent) {
 async function handlePreview(file: SysFile) {
   previewFile.value = file
   
-  // 始终使用后端预览接口，确保私有云存储（阿里云OSS等）也能正常预览
-  previewUrl.value = fileApi.getPreviewUrl(file.id!)
+  previewUrl.value = getFileAccessUrl(file)
   previewText.value = ''
 
   if (isText(file)) {
@@ -726,6 +726,7 @@ function getOfficePreviewUrl(file: SysFile | null): string { if (!file) return '
 function getFileIcon(file: SysFile) { const s = file.fileSuffix?.toLowerCase() || ''; if (['.doc', '.docx', '.xls', '.xlsx', '.pdf', '.txt', '.md'].includes(s)) return DocumentTextOutline; if (['.js', '.ts', '.vue'].includes(s)) return CodeSlashOutline; if (file.fileType?.startsWith('image/')) return ImageOutline; return DocumentOutline }
 function getFileIconColor(file: SysFile) { const s = file.fileSuffix?.toLowerCase() || ''; if (['.doc', '.docx'].includes(s)) return '#2b579a'; if (['.xls', '.xlsx'].includes(s)) return '#217346'; if (['.pdf'].includes(s)) return '#f40f02'; return '#9ca3af' }
 function formatFileSize(bytes: number): string { if (bytes === 0) return '0 B'; const k = 1024; const s = ['B', 'KB', 'MB', 'GB', 'TB']; const i = Math.floor(Math.log(bytes) / Math.log(k)); return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + s[i] }
+function getFileAccessUrl(file: SysFile): string { return normalizeFileUrl(file.url) || fileApi.getPreviewUrl(file.id!) }
 
 onMounted(() => {
   loadGroups()

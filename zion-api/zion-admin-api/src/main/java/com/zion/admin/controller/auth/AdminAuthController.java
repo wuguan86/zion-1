@@ -14,6 +14,8 @@ import com.zion.auth.enums.ClientType;
 import com.zion.auth.enums.LoginType;
 import com.zion.common.exception.BusinessException;
 import com.zion.common.result.Result;
+import com.zion.file.entity.SysFile;
+import com.zion.file.service.SysFileService;
 import com.zion.system.entity.SysMenu;
 import com.zion.system.entity.SysRole;
 import com.zion.system.entity.SysUser;
@@ -25,6 +27,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -49,6 +52,7 @@ public class AdminAuthController {
     private final StringRedisTemplate redisTemplate;
     private final SmsServiceFactory smsServiceFactory;
     private final LoginStrategyFactory loginStrategyFactory;
+    private final SysFileService fileService;
 
     private static final String CAPTCHA_KEY = "captcha:";
     private static final String SMS_CODE_KEY = "sms:login:";
@@ -180,6 +184,21 @@ public class AdminAuthController {
         Long userId = StpUtil.getLoginIdAsLong();
         userService.updateProfile(userId, user);
         return Result.ok();
+    }
+
+    /**
+     * 上传并更新当前用户头像，避免前端多接口串联时资料状态不同步。
+     */
+    @PostMapping("/profile/avatar")
+    public Result<String> uploadAvatar(@RequestParam("file") MultipartFile file) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        SysFile sysFile = fileService.uploadImage(file);
+
+        SysUser user = new SysUser();
+        user.setAvatar(sysFile.getUrl());
+        userService.updateProfile(userId, user);
+
+        return Result.ok(sysFile.getUrl());
     }
 
     /**
