@@ -1,6 +1,5 @@
 <script>
 	import { isLoggedIn } from './utils/auth.js'
-	import wsClient from './utils/websocket.js'
 	import { fetchCryptoConfig } from './utils/crypto.js'
 
 	export default {
@@ -9,7 +8,6 @@
 			// 预加载加密配置
 			fetchCryptoConfig()
 			if (isLoggedIn()) {
-				wsClient.connect()
 			} else {
 				uni.reLaunch({ url: '/pages/login/index' })
 			}

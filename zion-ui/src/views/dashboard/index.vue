@@ -182,13 +182,11 @@ import {
   Star,
   Refresh,
   DocumentText,
-  SettingsOutline,
-  ServerOutline,
+  SettingsOutline,
   RocketOutline,
   SparklesOutline,
   CodeSlashOutline,
-  CloudOutline,
-  ChatbubbleOutline
+  CloudOutline,
 } from '@vicons/ionicons5'
 import {useUserStore} from '@/stores/user'
 import {dashboardApi} from '@/api/system'
@@ -305,13 +303,6 @@ const shortcuts = [
     icon: markRaw(SettingsOutline),
     color: '#7C3AED',
     bgColor: '#EDE9FE'
-  },
-  {
-    name: '服务监控',
-    path: '/monitor/server',
-    icon: markRaw(ServerOutline),
-    color: '#0891B2',
-    bgColor: '#CFFAFE'
   }
 ]
 

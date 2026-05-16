@@ -192,11 +192,6 @@
             </dependency>
             <dependency>
                 <groupId>com.zion</groupId>
-                <artifactId>zion-message</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.zion</groupId>
                 <artifactId>zion-pay</artifactId>
                 <version>${project.version}</version>
             </dependency>

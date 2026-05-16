@@ -101,7 +101,6 @@
 	import { wxLogin, sendSmsCode, updateAppProfile, uploadAvatar } from '../../utils/api.js'
 	import { BASE_URL } from '../../utils/request.js'
 	import { setToken, setUserInfo } from '../../utils/auth.js'
-	import wsClient from '../../utils/websocket.js'
 
 	export default {
 		data() {
@@ -192,10 +191,9 @@
 						nickname: nickname,
 						avatar: avatarUrl
 					})
-					wsClient.connect()
 					this.showProfilePopup = false
 					uni.showToast({ title: '登录成功', icon: 'success' })
-					setTimeout(() => { uni.switchTab({ url: '/pages/index/index' }) }, 500)
+					setTimeout(() => { uni.switchTab({ url: '/pages/profile/index' }) }, 500)
 				} catch (err) {
 					console.error('确认登录失败:', err)
 				} finally { this.confirming = false }

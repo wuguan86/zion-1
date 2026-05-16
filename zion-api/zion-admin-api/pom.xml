@@ -43,10 +43,6 @@
         </dependency>
         <dependency>
             <groupId>com.zion</groupId>
-            <artifactId>zion-message</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.zion</groupId>
             <artifactId>zion-pay</artifactId>
         </dependency>
         <dependency>

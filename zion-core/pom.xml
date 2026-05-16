@@ -18,7 +18,6 @@
         <module>zion-system</module>
         <module>zion-file</module>
         <module>zion-gen</module>
-        <module>zion-message</module>
         <module>zion-auth</module>
         <module>zion-biz</module>
     </modules>

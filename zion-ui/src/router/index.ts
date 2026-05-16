@@ -90,19 +90,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/system/customer/index.vue'),
         meta: { title: '客户管理', icon: 'StarOutline' }
       },
-      // 消息中心
-      {
-        path: 'message/notice',
-        name: 'MessageNotice',
-        component: () => import('@/views/message/notice/index.vue'),
-        meta: { title: '系统通知', icon: 'NotificationsOutline' }
-      },
-      {
-        path: 'message/chat',
-        name: 'MessageChat',
-        component: () => import('@/views/message/chat/index.vue'),
-        meta: { title: '即时聊天', icon: 'ChatbubbleOutline' }
-      },
+      // 消息中心
       // 组织管理
       {
         path: 'org/dept',
@@ -129,37 +117,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/log/loginlog/index.vue'),
         meta: { title: '登录日志', icon: 'LogInOutline' }
       },
-      // 系统监控
-      {
-        path: 'monitor/online',
-        name: 'MonitorOnline',
-        component: () => import('@/views/monitor/online/index.vue'),
-        meta: { title: '在线用户', icon: 'PeopleCircleOutline' }
-      },
-      {
-        path: 'monitor/cache',
-        name: 'MonitorCache',
-        component: () => import('@/views/monitor/cache/index.vue'),
-        meta: { title: '缓存监控', icon: 'ServerOutline' }
-      },
-      {
-        path: 'monitor/api-access',
-        name: 'MonitorApiAccess',
-        component: () => import('@/views/monitor/api-access/index.vue'),
-        meta: { title: 'API访问统计', icon: 'StatsChartOutline' }
-      },
-      {
-        path: 'monitor/server',
-        name: 'MonitorServer',
-        component: () => import('@/views/monitor/server/index.vue'),
-        meta: { title: '服务监控', icon: 'DesktopOutline' }
-      },
-      {
-        path: 'monitor/server-manager',
-        name: 'ServerManager',
-        component: () => import('@/views/monitor/server-manager/index.vue'),
-        meta: { title: '服务器管理', icon: 'ServerOutline' }
-      },
+      // 系统监控
       {
         path: 'test/test',
         name: 'Test',

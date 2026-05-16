@@ -79,7 +79,6 @@
 <script>
 	import { logout, getAppProfile, updateAppProfile, uploadAvatar } from '../../utils/api.js'
 	import { getUserInfo, setUserInfo, clearAuth } from '../../utils/auth.js'
-	import wsClient from '../../utils/websocket.js'
 
 	export default {
 		data() {
@@ -175,7 +174,6 @@
 					success: async (res) => {
 						if (res.confirm) {
 							try { await logout().catch(() => {}) } catch (e) {}
-							wsClient.close()
 							clearAuth()
 							uni.reLaunch({ url: '/pages/login/index' })
 						}

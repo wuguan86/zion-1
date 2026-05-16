@@ -7,48 +7,10 @@
 	},
 	"pages": [
 		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "消息"
-			}
-		},
-		{
 			"path": "pages/login/index",
 			"style": {
 				"navigationBarTitleText": "登录",
 				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/chat/index",
-			"style": {
-				"navigationBarTitleText": "聊天",
-				"enablePullDownRefresh": false
-			}
-		},
-		{
-			"path": "pages/contacts/index",
-			"style": {
-				"navigationBarTitleText": "通讯录"
-			}
-		},
-		{
-			"path": "pages/group-chat/index",
-			"style": {
-				"navigationBarTitleText": "群聊",
-				"enablePullDownRefresh": false
-			}
-		},
-		{
-			"path": "pages/group/create",
-			"style": {
-				"navigationBarTitleText": "创建群聊"
-			}
-		},
-		{
-			"path": "pages/group/detail",
-			"style": {
-				"navigationBarTitleText": "群设置"
 			}
 		},
 		{
@@ -73,7 +35,7 @@
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
-		"navigationBarTitleText": "Zion 公共",
+		"navigationBarTitleText": "Zion Admin",
 		"navigationBarBackgroundColor": "#07C160",
 		"backgroundColor": "#EDEDED",
 		"backgroundTextStyle": "dark"
@@ -84,18 +46,6 @@
 		"backgroundColor": "#ffffff",
 		"borderStyle": "white",
 		"list": [
-			{
-				"pagePath": "pages/index/index",
-				"text": "消息",
-				"iconPath": "static/tabbar/chat.png",
-				"selectedIconPath": "static/tabbar/chat-active.png"
-			},
-			{
-				"pagePath": "pages/contacts/index",
-				"text": "通讯录",
-				"iconPath": "static/tabbar/contacts.png",
-				"selectedIconPath": "static/tabbar/contacts-active.png"
-			},
 			{
 				"pagePath": "pages/profile/index",
 				"text": "我的",

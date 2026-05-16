@@ -83,7 +83,6 @@
 <script>
 	import { changeAppPassword } from '../../utils/api.js'
 	import { clearAuth } from '../../utils/auth.js'
-	import wsClient from '../../utils/websocket.js'
 
 	export default {
 		data() {
@@ -157,7 +156,6 @@
 						showCancel: false,
 						success: () => {
 							// 密码修改成功后退出登录
-							wsClient.close()
 							clearAuth()
 							uni.reLaunch({ url: '/pages/login/index' })
 						}

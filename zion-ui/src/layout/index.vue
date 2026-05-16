@@ -205,86 +205,6 @@
             </div>
           </n-popover>
 
-          <!-- 消息通知 -->
-          <n-popover trigger="click" placement="bottom-end" :width="360" @update:show="handleMessagePopoverShow">
-            <template #trigger>
-              <n-badge :value="messageStore.totalUnread()" :max="99" :show-zero="false">
-                <div class="header-icon" title="消息通知">
-                  <n-icon size="20"><NotificationsOutline /></n-icon>
-                </div>
-              </n-badge>
-            </template>
-            <div class="message-popover">
-              <div class="message-tabs">
-                <n-tabs v-model:value="messageTab" type="line" size="small" @update:value="handleTabChange" class="message-tabs-inner">
-                  <n-tab-pane name="notice" tab="通知">
-                    <template #tab>
-                      <n-badge :value="messageStore.noticeCount" :max="99" :show-zero="false" :offset="[8, -2]">
-                        <span class="tab-text">通知</span>
-                      </n-badge>
-                    </template>
-                  </n-tab-pane>
-                  <n-tab-pane name="chat" tab="消息">
-                    <template #tab>
-                      <n-badge :value="messageStore.chatCount" :max="99" :show-zero="false" :offset="[8, -2]">
-                        <span class="tab-text">消息</span>
-                      </n-badge>
-                    </template>
-                  </n-tab-pane>
-                </n-tabs>
-              </div>
-              <div class="message-list" ref="messageListRef" @scroll="handleMessageScroll">
-                <n-spin :show="messageLoading && messagePage === 1">
-                  <!-- 通知列表 -->
-                  <template v-if="messageTab === 'notice'">
-                    <div v-for="item in recentNotices" :key="item.id" class="message-item" @click="handleNoticeClick(item)">
-                      <div class="message-item-header">
-                        <n-tag :type="item.noticeType === 1 ? 'info' : 'warning'" size="small">
-                          {{ item.noticeType === 1 ? '通知' : '公告' }}
-                        </n-tag>
-                        <span class="message-time">{{ formatMessageTime(item.createTime) }}</span>
-                      </div>
-                      <div class="message-title">{{ item.title }}</div>
-                      <div class="message-content">{{ stripHtml(item.content) }}</div>
-                    </div>
-                    <n-empty v-if="recentNotices.length === 0 && !messageLoading" description="暂无通知" size="small" style="padding: 30px 0" />
-                  </template>
-                  <!-- 聊天消息列表 -->
-                  <template v-else>
-                    <div v-for="item in recentChats" :key="item.senderId || item.id" class="message-item" @click="handleChatClick(item)">
-                      <div class="message-item-row">
-                        <n-avatar round size="small" :src="item.senderAvatar">
-                          {{ item.senderName?.charAt(0) || 'U' }}
-                        </n-avatar>
-                        <div class="message-item-content">
-                          <div class="message-item-header">
-                            <span class="message-sender">{{ item.senderName || '用户' }}</span>
-                            <span class="message-time">{{ formatMessageTime(item.sendTime) }}</span>
-                          </div>
-                          <div class="message-content">{{ item.content }}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <n-empty v-if="recentChats.length === 0 && !messageLoading" description="暂无消息" size="small" style="padding: 30px 0" />
-                  </template>
-                </n-spin>
-                <!-- 加载更多 -->
-                <div v-if="messageLoading && messagePage > 1" class="message-loading">
-                  <n-spin size="small" />
-                </div>
-                <div v-if="!hasMoreMessages && (recentNotices.length > 0 || recentChats.length > 0)" class="message-no-more">
-                  没有更多了
-                </div>
-              </div>
-              <div class="message-footer">
-                <n-button v-if="messageStore.noticeCount > 0 && messageTab === 'notice'" text size="small" @click="handleMarkAllRead">
-                  全部已读
-                </n-button>
-                <n-button text type="primary" @click="goToMessage">查看全部</n-button>
-              </div>
-            </div>
-          </n-popover>
-
           <n-dropdown :options="userOptions" @select="handleUserAction">
             <div class="user-info">
               <n-avatar
@@ -320,10 +240,7 @@
     <ProfileModal v-model:show="showProfileModal" />
 
     <!-- 修改密码弹窗 -->
-    <PasswordModal v-model:show="showPasswordModal" />
-
-    <!-- 消息通知弹窗 -->
-    <MessageNotification />
+    <PasswordModal v-model:show="showPasswordModal" />
   </n-layout>
 </template>
 
@@ -346,40 +263,30 @@ import {
   IdCardOutline,
   DocumentTextOutline,
   ListOutline,
-  LogInOutline,
-  PulseOutline,
-  PeopleCircleOutline,
-  ServerOutline,
-  DesktopOutline,
+  LogInOutline,
   SettingsSharp,
   FolderOpenOutline,
   DocumentOutline,
-  CloudOutline,
-  NotificationsOutline,
-  ChatbubbleOutline,
+  CloudOutline,
   SearchOutline,
   ExpandOutline,
   ContractOutline,
   ColorPaletteOutline,
   CheckmarkOutline
 } from '@vicons/ionicons5'
-import { useUserStore } from '@/stores/user'
-import { useMessageStore } from '@/stores/message'
+import { useUserStore } from '@/stores/user'
 import { useSiteStore } from '@/stores/site'
 import { useThemeStore, themeColors } from '@/stores/theme'
 import ProfileModal from '@/components/ProfileModal.vue'
-import PasswordModal from '@/components/PasswordModal.vue'
-import MessageNotification from '@/components/MessageNotification.vue'
-import TabBar from '@/components/TabBar.vue'
-import { noticeApi, chatApi, type SysNotice, type ChatMessage } from '@/api/message'
+import PasswordModal from '@/components/PasswordModal.vue'
+import TabBar from '@/components/TabBar.vue'
 import { iconMap as externalIconMap } from '@/utils/icons'
 
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
 const dialog = useDialog()
-const userStore = useUserStore()
-const messageStore = useMessageStore()
+const userStore = useUserStore()
 const siteStore = useSiteStore()
 const themeStore = useThemeStore()
 
@@ -393,15 +300,8 @@ window.$message = message
 const collapsed = ref(false)
 const showProfileModal = ref(false)
 const showPasswordModal = ref(false)
-const messageTab = ref('notice')
 
 // 消息相关
-const messageLoading = ref(false)
-const recentNotices = ref<SysNotice[]>([])
-const recentChats = ref<ChatMessage[]>([])
-const messagePage = ref(1)
-const hasMoreMessages = ref(true)
-const messageListRef = ref<HTMLElement | null>(null)
 
 // 搜索相关
 const searchVisible = ref(false)
@@ -436,185 +336,8 @@ const headerStyle = computed(() => {
 
 // 初始化WebSocket和加载未读数
 onMounted(() => {
-  messageStore.initWebSocket()
-  loadUnreadCount()
-  // 监听全屏变化
   document.addEventListener('fullscreenchange', handleFullscreenChange)
 })
-
-// 加载未读数量
-async function loadUnreadCount() {
-  try {
-    const [noticeCount, chatCount] = await Promise.all([
-      noticeApi.getUnreadCount(),
-      chatApi.getUnreadCount()
-    ])
-    messageStore.setUnreadCount(noticeCount, chatCount)
-  } catch (error) {
-    // 忽略错误
-  }
-}
-
-// 跳转到消息页面
-function goToMessage() {
-  if (messageTab.value === 'notice') {
-    router.push('/message/notice')
-  } else {
-    router.push('/message/chat')
-  }
-}
-
-// 消息弹窗显示时加载数据
-async function handleMessagePopoverShow(show: boolean) {
-  if (show) {
-    loadUnreadCount()
-    // 重置分页
-    messagePage.value = 1
-    hasMoreMessages.value = true
-    if (messageTab.value === 'notice') {
-      recentNotices.value = []
-      await loadRecentNotices()
-    } else {
-      recentChats.value = []
-      await loadRecentChats()
-    }
-  }
-}
-
-// Tab 切换时加载数据
-async function handleTabChange(tab: string) {
-  // 重置分页
-  messagePage.value = 1
-  hasMoreMessages.value = true
-  if (tab === 'notice') {
-    recentNotices.value = []
-    await loadRecentNotices()
-  } else {
-    recentChats.value = []
-    await loadRecentChats()
-  }
-}
-
-// 加载最近通知
-async function loadRecentNotices(append = false) {
-  if (messageLoading.value) return
-  try {
-    messageLoading.value = true
-    const res = await noticeApi.myNotices({ page: messagePage.value, pageSize: 10 })
-    const list = res.list || []
-    if (append) {
-      recentNotices.value = [...recentNotices.value, ...list]
-    } else {
-      recentNotices.value = list
-    }
-    hasMoreMessages.value = list.length >= 10
-  } catch (error) {
-    // 忽略错误
-  } finally {
-    messageLoading.value = false
-  }
-}
-
-// 加载最近聊天
-async function loadRecentChats(append = false) {
-  if (messageLoading.value) return
-  try {
-    messageLoading.value = true
-    const res = await chatApi.getContacts()
-    const list = res || []
-    if (append) {
-      recentChats.value = [...recentChats.value, ...list]
-    } else {
-      recentChats.value = list
-    }
-    // 聊天联系人一次性加载，不分页
-    hasMoreMessages.value = false
-  } catch (error) {
-    // 忽略错误
-  } finally {
-    messageLoading.value = false
-  }
-}
-
-// 滚动加载更多
-function handleMessageScroll(e: Event) {
-  const target = e.target as HTMLElement
-  const { scrollTop, scrollHeight, clientHeight } = target
-  
-  // 距离底部 50px 时加载更多
-  if (scrollHeight - scrollTop - clientHeight < 50 && hasMoreMessages.value && !messageLoading.value) {
-    messagePage.value++
-    if (messageTab.value === 'notice') {
-      loadRecentNotices(true)
-    }
-    // 聊天不做分页
-  }
-}
-
-// 标记全部已读
-async function handleMarkAllRead() {
-  try {
-    await noticeApi.markAllAsRead()
-    messageStore.clearNoticeCount()
-    // 刷新列表
-    messagePage.value = 1
-    await loadRecentNotices()
-    message.success('已全部标记为已读')
-  } catch (error) {
-    // 忽略
-  }
-}
-
-// 格式化消息时间
-function formatMessageTime(time: string | undefined): string {
-  if (!time) return ''
-  const date = new Date(time)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  
-  if (diff < 60000) return '刚刚'
-  if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前'
-  if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前'
-  if (diff < 604800000) return Math.floor(diff / 86400000) + '天前'
-  
-  return `${date.getMonth() + 1}/${date.getDate()}`
-}
-
-// 去除 HTML 标签
-function stripHtml(html: string | undefined): string {
-  if (!html) return ''
-  return html.replace(/<[^>]*>/g, '').substring(0, 50)
-}
-
-// 点击通知
-async function handleNoticeClick(item: SysNotice) {
-  // 标记已读
-  if (item.id) {
-    try {
-      await noticeApi.markAsRead(item.id)
-      // 刷新未读数量
-      loadUnreadCount()
-    } catch (error) {
-      // 忽略
-    }
-  }
-  router.push({ path: '/message/notice', query: { id: item.id?.toString() } })
-}
-
-// 点击聊天
-async function handleChatClick(item: ChatMessage) {
-  // 标记已读
-  if (item.senderId) {
-    try {
-      await chatApi.markAsRead(item.senderId)
-      // 刷新未读数量
-      loadUnreadCount()
-    } catch (error) {
-      // 忽略
-    }
-  }
-  router.push({ path: '/message/chat', query: { userId: item.senderId?.toString() } })
-}
 
 // 搜索菜单
 function handleSearch() {
@@ -663,12 +386,7 @@ function getIconName(key: string): string {
     '/org/post': 'IdCardOutline',
     '/log/operlog': 'ListOutline',
     '/log/loginlog': 'LogInOutline',
-    '/system/file': 'DocumentOutline',
-    '/message/notice': 'NotificationsOutline',
-    '/message/chat': 'ChatbubbleOutline',
-    '/monitor/online': 'PeopleCircleOutline',
-    '/monitor/cache': 'ServerOutline',
-    '/monitor/server': 'DesktopOutline'
+    '/system/file': 'DocumentOutline',
   }
   return iconMapping[key] || 'MenuOutline'
 }
@@ -718,17 +436,11 @@ const iconMap: Record<string, any> = {
   IdCardOutline,
   DocumentTextOutline,
   ListOutline,
-  LogInOutline,
-  PulseOutline,
-  PeopleCircleOutline,
-  ServerOutline,
-  DesktopOutline,
+  LogInOutline,
   SettingsSharp,
   FolderOpenOutline,
   DocumentOutline,
-  CloudOutline,
-  NotificationsOutline,
-  ChatbubbleOutline
+  CloudOutline,
 }
 
 // 合并外部图标映射（已在顶部导入）
