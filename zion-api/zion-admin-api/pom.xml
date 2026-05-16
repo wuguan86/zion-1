@@ -49,6 +49,10 @@
             <groupId>com.zion</groupId>
             <artifactId>zion-sms</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.zion</groupId>
+            <artifactId>zion-wechat</artifactId>
+        </dependency>
         <!-- WebSocket基础设施 -->
         <dependency>
             <groupId>com.zion</groupId>

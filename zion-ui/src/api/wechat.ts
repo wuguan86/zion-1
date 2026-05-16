@@ -24,40 +24,40 @@ export interface MpOAuthResult {
 export const wechatApi = {
   // 小程序登录
   miniProgramLogin(code: string): Promise<MiniProgramLoginResult> {
-    return request({ url: '/api/wechat/miniprogram/login', method: 'post', data: { code } })
+    return request({ url: '/wechat/miniprogram/login', method: 'post', data: { code } })
   },
 
   // 获取小程序用户手机号
   getMiniProgramPhone(code: string): Promise<PhoneResult> {
-    return request({ url: '/api/wechat/miniprogram/phone', method: 'post', data: { code } })
+    return request({ url: '/wechat/miniprogram/phone', method: 'post', data: { code } })
   },
 
-  // 获取公众号OAuth授权URL
+  // 获取公众号 OAuth 授权地址
   getOAuthUrl(redirectUri: string, state?: string, scope?: string): Promise<string> {
-    return request({ 
-      url: '/api/wechat/mp/oauth-url', 
-      method: 'get', 
-      params: { redirectUri, state: state || '', scope: scope || 'snsapi_userinfo' } 
+    return request({
+      url: '/wechat/mp/oauth-url',
+      method: 'get',
+      params: { redirectUri, state: state || '', scope: scope || 'snsapi_userinfo' }
     })
   },
 
-  // 公众号OAuth登录
+  // 公众号 OAuth 登录
   mpOAuthLogin(code: string): Promise<MpOAuthResult> {
-    return request({ url: '/api/wechat/mp/oauth-login', method: 'post', data: { code } })
+    return request({ url: '/wechat/mp/oauth-login', method: 'post', data: { code } })
   },
 
-  // 同步菜单到微信
+  // 同步自定义菜单到微信
   syncMenu(menuConfig: string): Promise<void> {
-    return request({ url: '/api/wechat/mp/menu/sync', method: 'post', data: { menuConfig } })
+    return request({ url: '/wechat/mp/menu/sync', method: 'post', data: { menuConfig } })
   },
 
-  // 获取当前菜单
+  // 获取当前公众号菜单
   getMenu(): Promise<string> {
-    return request({ url: '/api/wechat/mp/menu', method: 'get' })
+    return request({ url: '/wechat/mp/menu', method: 'get' })
   },
 
-  // 删除菜单
+  // 删除当前公众号菜单
   deleteMenu(): Promise<void> {
-    return request({ url: '/api/wechat/mp/menu', method: 'delete' })
+    return request({ url: '/wechat/mp/menu', method: 'delete' })
   }
 }
