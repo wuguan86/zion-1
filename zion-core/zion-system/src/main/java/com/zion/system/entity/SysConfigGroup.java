@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @TableName("sys_config_group")
 public class SysConfigGroup {
     
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
     
     /** 分组编码 */

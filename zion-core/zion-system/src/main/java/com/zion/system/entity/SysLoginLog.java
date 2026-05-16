@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @TableName("sys_login_log")
 public class SysLoginLog implements Serializable {
 
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**

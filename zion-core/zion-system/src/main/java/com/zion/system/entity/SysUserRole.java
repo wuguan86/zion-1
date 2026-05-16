@@ -14,7 +14,7 @@ import java.io.Serializable;
 @TableName("sys_user_role")
 public class SysUserRole implements Serializable {
 
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**

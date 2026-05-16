@@ -12,7 +12,7 @@ import lombok.Data;
 @TableName("sys_role_dept")
 public class SysRoleDept {
 
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**

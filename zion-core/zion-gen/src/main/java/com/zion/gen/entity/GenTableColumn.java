@@ -12,7 +12,7 @@ import java.io.Serializable;
 @TableName("gen_table_column")
 public class GenTableColumn implements Serializable {
 
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /** 归属表ID */

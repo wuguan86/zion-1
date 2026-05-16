@@ -36,7 +36,7 @@ public class ${className} implements Serializable {
 #set($excelIdx = $excelIdx + 1)
 #end
 #if($column.isPk == 1)
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
 #end
 #if($column.javaField == 'createTime')
     @TableField(fill = FieldFill.INSERT)

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @TableName("sys_user_blacklist")
 public class SysUserBlacklist {
     
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
     
     /**

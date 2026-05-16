@@ -16,7 +16,7 @@ public class SysFile implements Serializable {
     /**
      * 文件ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**

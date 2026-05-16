@@ -14,7 +14,7 @@ import java.util.List;
 @TableName("gen_table")
 public class GenTable implements Serializable {
 
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /** 表名 */
