@@ -128,6 +128,7 @@ import { NButton, NTag, NSpace, NPagination, useMessage, useDialog, type DataTab
 import { SearchOutline, AddOutline } from '@vicons/ionicons5'
 import { postApi, userApi, type SysUser, type SysPost } from '@/api/system'
 import { useUserStore } from '@/stores/user'
+import { formatDateTime } from '@/utils/datetime'
 
 const message = useMessage()
 const dialog = useDialog()
@@ -207,7 +208,6 @@ const pagination = reactive({
 })
 
 const userColumns: DataTableColumns<SysUser> = [
-  { title: 'ID', key: 'id', width: 60 },
   { title: '用户名', key: 'username', width: 100 },
   { title: '昵称', key: 'nickname', width: 100 },
   { title: '部门', key: 'deptName', width: 100, render(row) {
@@ -257,7 +257,9 @@ const userColumns: DataTableColumns<SysUser> = [
       return h(NTag, { type: status.type, size: 'small' }, { default: () => status.label })
     }
   },
-  { title: '创建时间', key: 'createTime', width: 170 }
+  { title: '创建时间', key: 'createTime', width: 170, render(row) {
+    return formatDateTime(row.createTime)
+  }}
 ]
 
 async function loadUserData() {

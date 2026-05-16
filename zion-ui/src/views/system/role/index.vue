@@ -148,6 +148,7 @@ import { NButton, NTag, NSpace, useMessage, useDialog, type DataTableColumns, ty
 import { SearchOutline, RefreshOutline, AddOutline } from '@vicons/ionicons5'
 import { roleApi, menuApi, deptApi, type SysRole, type SysMenu, type SysDept } from '@/api/system'
 import { useUserStore } from '@/stores/user'
+import { formatDateTime } from '@/utils/datetime'
 
 const message = useMessage()
 const dialog = useDialog()
@@ -198,7 +199,6 @@ const deptIds = ref<number[]>([])
 
 // 表格列
 const columns: DataTableColumns<SysRole> = [
-  { title: 'ID', key: 'id', width: 80 },
   { title: '角色名称', key: 'name', width: 150 },
   { title: '角色编码', key: 'code', width: 150 },
   { title: '排序', key: 'sort', width: 80 },
@@ -215,7 +215,9 @@ const columns: DataTableColumns<SysRole> = [
     }
   },
   { title: '备注', key: 'remark',width: 180, ellipsis: { tooltip: true } },
-  { title: '创建时间', key: 'createTime', width: 180 },
+  { title: '创建时间', key: 'createTime', width: 180, render(row) {
+    return formatDateTime(row.createTime)
+  }},
   {
     title: '操作',
     key: 'actions',

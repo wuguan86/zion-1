@@ -142,6 +142,7 @@ import { NButton, NTag, NSpace, NPagination, useMessage, useDialog, type DataTab
 import { SearchOutline, RefreshOutline, AddOutline } from '@vicons/ionicons5'
 import { dictTypeApi, dictDataApi, type SysDictType, type SysDictData } from '@/api/org'
 import { useUserStore } from '@/stores/user'
+import { formatDateTime } from '@/utils/datetime'
 
 const message = useMessage()
 const dialog = useDialog()
@@ -165,14 +166,15 @@ const loading = ref(false)
 const pagination = reactive({ page: 1, pageSize: 10, itemCount: 0, showSizePicker: true, pageSizes: [10, 20, 50] })
 
 const columns: DataTableColumns<SysDictType> = [
-  { title: 'ID', key: 'id', width: 80 },
   { title: '字典名称', key: 'dictName', width: 150 },
   { title: '字典类型', key: 'dictType', width: 150 },
   { title: '状态', key: 'status', width: 80, render(row) {
     return h(NTag, { type: row.status === 1 ? 'success' : 'error', size: 'small' }, { default: () => row.status === 1 ? '启用' : '禁用' })
   }},
   { title: '备注', key: 'remark', width: 80, ellipsis: { tooltip: true } },
-  { title: '创建时间', key: 'createTime', width: 180 },
+  { title: '创建时间', key: 'createTime', width: 180, render(row) {
+    return formatDateTime(row.createTime)
+  }},
   { title: '操作', key: 'actions', width: 220, fixed: 'right', render(row) {
     const buttons = [h(NButton, { size: 'small', onClick: () => handleViewData(row) }, { default: () => '字典数据' })]
     if (hasPermission('sys:dict:edit')) {

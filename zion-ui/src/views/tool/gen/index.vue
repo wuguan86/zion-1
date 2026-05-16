@@ -347,6 +347,7 @@ import { NButton, NSpace, NIcon, NTag, NSwitch, NSelect, NInput, NText, NList, N
 import { SearchOutline, RefreshOutline, CloudDownloadOutline, CodeSlashOutline, TrashOutline, SettingsOutline, EyeOutline, SyncOutline, CloseCircleOutline, ExpandOutline } from '@vicons/ionicons5'
 import { genApi, type GenTable, type GenTableColumn, type DatabaseTable } from '@/api/gen'
 import { dictTypeApi } from '@/api/org'
+import { formatDateTime } from '@/utils/datetime'
 
 const message = useMessage()
 const dialog = useDialog()
@@ -435,7 +436,9 @@ const columns: DataTableColumns<GenTable> = [
   { title: '表名', key: 'tableName', width: 200 },
   { title: '表描述', key: 'tableComment', ellipsis: { tooltip: true } },
   { title: '实体类', key: 'className', width: 200 },
-  { title: '创建时间', key: 'createTime', width: 180 },
+  { title: '创建时间', key: 'createTime', width: 180, render(row) {
+    return formatDateTime(row.createTime)
+  }},
   {
     title: '操作',
     key: 'actions',
@@ -472,7 +475,9 @@ const importColumns: DataTableColumns<DatabaseTable> = [
   { type: 'selection' },
   { title: '表名', key: 'tableName' },
   { title: '表描述', key: 'tableComment' },
-  { title: '创建时间', key: 'createTime' }
+  { title: '创建时间', key: 'createTime', render(row) {
+    return formatDateTime(row.createTime)
+  }}
 ]
 
 // 字段编辑列

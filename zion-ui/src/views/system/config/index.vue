@@ -279,7 +279,7 @@
                               {{ getSmsStatusMeta(log.status).text }}
                             </n-tag>
                           </td>
-                          <td>{{ log.createTime }}</td>
+                          <td>{{ formatDateTime(log.createTime) }}</td>
                         </tr>
                       </tbody>
                     </n-table>
@@ -932,6 +932,7 @@ import { configGroupApi, type SysConfigGroup, type SmsLog } from '@/api/org'
 import { fileApi } from '@/api/system'
 import { wechatApi } from '@/api/wechat'
 import { useSiteStore } from '@/stores/site'
+import { formatDateTime } from '@/utils/datetime'
 
 const message = useMessage()
 const siteStore = useSiteStore()
@@ -1164,7 +1165,9 @@ const smsLogsColumns = [
     }
   },
   { title: '结果信息', key: 'resultMsg', ellipsis: { tooltip: true } },
-  { title: '发送时间', key: 'createTime', width: 170 }
+  { title: '发送时间', key: 'createTime', width: 170, render(row: SmsLog) {
+    return formatDateTime(row.createTime)
+  }}
 ]
 
 // 密钥生成相关

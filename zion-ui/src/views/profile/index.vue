@@ -65,7 +65,7 @@
             </div>
             <div class="info-row">
               <span class="info-label">注册时间</span>
-              <span class="info-value">{{ formData.createTime || '-' }}</span>
+              <span class="info-value">{{ formatDateTime(formData.createTime) }}</span>
             </div>
           </div>
         </n-card>
@@ -147,6 +147,7 @@ import { CameraOutline, PersonOutline, CreateOutline } from '@vicons/ionicons5'
 import { authApi, type ProfileInfo } from '@/api/auth'
 import { fileApi } from '@/api/system'
 import { useUserStore } from '@/stores/user'
+import { formatDateTime } from '@/utils/datetime'
 
 const message = useMessage()
 const userStore = useUserStore()

@@ -202,7 +202,7 @@
                     <div class="file-name">{{ file.originalName }}</div>
                     <div class="file-meta">
                       <span>{{ formatFileSize(file.fileSize) }}</span>
-                      <span>{{ file.createTime }}</span>
+                      <span>{{ formatDateTime(file.createTime) }}</span>
                     </div>
                   </div>
                   <div class="file-actions" @click.stop>
@@ -332,6 +332,7 @@ import {
 import {fileApi, fileGroupApi, type SysFile, type SysFileGroup} from '@/api/system'
 import {useUserStore} from '@/stores/user'
 import {useThemeStore} from '@/stores/theme'
+import {formatDateTime} from '@/utils/datetime'
 
 const message = useMessage()
 const dialog = useDialog()

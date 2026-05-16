@@ -65,6 +65,7 @@ import { NButton, NTag, NSpace, NPagination, useMessage, useDialog, type DataTab
 import { SearchOutline, RefreshOutline, TrashOutline } from '@vicons/ionicons5'
 import { loginLogApi, type SysLoginLog } from '@/api/monitor'
 import { useUserStore } from '@/stores/user'
+import { formatDateTime } from '@/utils/datetime'
 
 const message = useMessage()
 const dialog = useDialog()
@@ -84,7 +85,6 @@ const pagination = reactive({
 const pageCount = computed(() => Math.ceil(pagination.itemCount / pagination.pageSize))
 
 const columns: DataTableColumns<SysLoginLog> = [
-  { title: 'ID', key: 'id', width: 80 },
   { title: '用户名', key: 'username', width: 120 },
   { title: 'IP地址', key: 'ipaddr', width: 140 },
   { title: '登录地点', key: 'loginLocation', width: 150 },
@@ -94,7 +94,9 @@ const columns: DataTableColumns<SysLoginLog> = [
     return h(NTag, { type: row.status === 0 ? 'success' : 'error', size: 'small' }, { default: () => row.status === 0 ? '成功' : '失败' })
   }},
   { title: '提示信息', key: 'msg', ellipsis: { tooltip: true } },
-  { title: '登录时间', key: 'loginTime', width: 180 },
+  { title: '登录时间', key: 'loginTime', width: 180, render(row) {
+    return formatDateTime(row.loginTime)
+  }},
   { title: '操作', key: 'actions', width: 80, fixed: 'right', render(row) {
     return hasPermission('sys:loginlog:delete')
       ? h(NButton, { size: 'small', type: 'error', onClick: () => handleDelete(row) }, { default: () => '删除' })
@@ -132,5 +134,4 @@ function handleClean() {
 
 onMounted(() => loadData())
 </script>
-
 

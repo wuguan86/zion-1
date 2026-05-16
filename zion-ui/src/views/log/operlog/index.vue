@@ -82,7 +82,7 @@
           <n-tag :type="detailData.status === 0 ? 'success' : 'error'" size="small">{{ detailData.status === 0 ? '正常' : '异常' }}</n-tag>
         </n-descriptions-item>
         <n-descriptions-item label="耗时">{{ detailData.costTime }}ms</n-descriptions-item>
-        <n-descriptions-item label="操作时间" :span="2">{{ detailData.operTime }}</n-descriptions-item>
+        <n-descriptions-item label="操作时间" :span="2">{{ formatDateTime(detailData.operTime) }}</n-descriptions-item>
         <n-descriptions-item v-if="detailData.errorMsg" label="错误信息" :span="2">
           <n-text type="error">{{ detailData.errorMsg }}</n-text>
         </n-descriptions-item>
@@ -97,6 +97,7 @@ import { NButton, NTag, NSpace, NPagination, useMessage, useDialog, type DataTab
 import { SearchOutline, RefreshOutline, TrashOutline } from '@vicons/ionicons5'
 import { operLogApi, type SysOperLog } from '@/api/monitor'
 import { useUserStore } from '@/stores/user'
+import { formatDateTime } from '@/utils/datetime'
 
 const message = useMessage()
 const dialog = useDialog()
@@ -121,7 +122,6 @@ const detailData = ref<SysOperLog>({} as SysOperLog)
 const businessTypeMap: Record<number, string> = { 0: '其他', 1: '新增', 2: '修改', 3: '删除', 4: '查询', 5: '导出' }
 
 const columns: DataTableColumns<SysOperLog> = [
-  { title: 'ID', key: 'id', width: 80 },
   { title: '模块名称', key: 'title', width: 120 },
   { title: '业务类型', key: 'businessType', width: 100, render(row) {
     return h('span', {}, businessTypeMap[row.businessType] || '其他')
@@ -133,7 +133,9 @@ const columns: DataTableColumns<SysOperLog> = [
     return h(NTag, { type: row.status === 0 ? 'success' : 'error', size: 'small' }, { default: () => row.status === 0 ? '正常' : '异常' })
   }},
   { title: '耗时', key: 'costTime', width: 80, render(row) { return h('span', {}, `${row.costTime}ms`) }},
-  { title: '操作时间', key: 'operTime', width: 180 },
+  { title: '操作时间', key: 'operTime', width: 180, render(row) {
+    return formatDateTime(row.operTime)
+  }},
   { title: '操作', key: 'actions', width: 120, fixed: 'right', render(row) {
     const buttons = [h(NButton, { size: 'small', onClick: () => handleDetail(row) }, { default: () => '详情' })]
     if (hasPermission('sys:operlog:delete')) {

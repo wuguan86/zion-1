@@ -157,6 +157,7 @@ import { ref, reactive, h, onMounted } from 'vue'
 import { NButton, NTag, NSpace, useMessage, useDialog, type DataTableColumns, type FormInst, type FormRules } from 'naive-ui'
 import { SearchOutline, RefreshOutline, AddOutline } from '@vicons/ionicons5'
 import { fileConfigApi, type SysFileConfig } from '@/api/system'
+import { formatDateTime } from '@/utils/datetime'
 
 const message = useMessage()
 const dialog = useDialog()
@@ -187,7 +188,6 @@ const pagination = reactive({
 
 // 表格列
 const columns: DataTableColumns<SysFileConfig> = [
-  { title: 'ID', key: 'id', width: 80 },
   { title: '配置名称', key: 'name', width: 150 },
   {
     title: '存储类型',
@@ -226,7 +226,9 @@ const columns: DataTableColumns<SysFileConfig> = [
       }, { default: () => row.status === 1 ? '启用' : '禁用' })
     }
   },
-  { title: '创建时间', key: 'createTime', width: 180 },
+  { title: '创建时间', key: 'createTime', width: 180, render(row) {
+    return formatDateTime(row.createTime)
+  }},
   {
     title: '操作',
     key: 'actions',
