@@ -5,9 +5,11 @@
       <!-- 左侧欢迎信息 -->
       <div class="welcome-info">
         <div class="welcome-header">
-          <n-avatar round :size="56" :src="userStore.avatar || undefined">
-            {{ userStore.nickname?.charAt(0) || 'U' }}
-          </n-avatar>
+          <UserAvatar
+            :src="userStore.avatar"
+            :name="userStore.nickname"
+            :size="56"
+          />
           <div class="welcome-text">
             <h1 class="welcome-title">
               {{ getGreeting() }}，{{ userStore.nickname }} 👋
@@ -190,6 +192,7 @@ import {
 } from '@vicons/ionicons5'
 import {useUserStore} from '@/stores/user'
 import {dashboardApi} from '@/api/system'
+import UserAvatar from '@/components/UserAvatar.vue'
 
 const router = useRouter()
 const userStore = useUserStore()

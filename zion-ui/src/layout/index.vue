@@ -207,13 +207,11 @@
 
           <n-dropdown :options="userOptions" @select="handleUserAction">
             <div class="user-info">
-              <n-avatar
-                round
+              <UserAvatar
+                :src="userStore.avatar"
+                :name="userStore.nickname"
                 size="small"
-                :src="userStore.avatar || undefined"
-              >
-                {{ userStore.nickname?.charAt(0) || 'U' }}
-              </n-avatar>
+              />
               <span class="user-name">{{ userStore.nickname }}</span>
               <n-icon size="16">
                 <ChevronDownOutline />
@@ -278,8 +276,9 @@ import { useUserStore } from '@/stores/user'
 import { useSiteStore } from '@/stores/site'
 import { useThemeStore, themeColors } from '@/stores/theme'
 import ProfileModal from '@/components/ProfileModal.vue'
-import PasswordModal from '@/components/PasswordModal.vue'
-import TabBar from '@/components/TabBar.vue'
+import PasswordModal from '@/components/PasswordModal.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
+import TabBar from '@/components/TabBar.vue'
 import { iconMap as externalIconMap } from '@/utils/icons'
 
 const route = useRoute()
