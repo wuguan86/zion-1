@@ -10,7 +10,7 @@
               <n-avatar
                 round
                 :size="100"
-                :src="formData.avatar || undefined"
+                :src="avatarDisplaySrc"
                 class="profile-avatar"
               >
                 {{ formData.nickname?.charAt(0) || 'U' }}
@@ -141,13 +141,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useMessage, type FormInst, type FormRules } from 'naive-ui'
 import { CameraOutline, PersonOutline, CreateOutline } from '@vicons/ionicons5'
 import { authApi, type ProfileInfo } from '@/api/auth'
 import { fileApi } from '@/api/system'
 import { useUserStore } from '@/stores/user'
 import { formatDateTime } from '@/utils/datetime'
+import { normalizeFileUrl } from '@/utils/fileUrl'
 
 const message = useMessage()
 const userStore = useUserStore()
@@ -156,6 +157,7 @@ const formRef = ref<FormInst | null>(null)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const loading = ref(false)
 const saving = ref(false)
+const avatarPreviewUrl = ref('')
 
 const formData = ref<Partial<ProfileInfo>>({
   id: 0,
@@ -175,6 +177,8 @@ const formData = ref<Partial<ProfileInfo>>({
 })
 
 const originalData = ref<Partial<ProfileInfo>>({})
+
+const avatarDisplaySrc = computed(() => avatarPreviewUrl.value || normalizeFileUrl(formData.value.avatar) || undefined)
 
 const rules: FormRules = {
   nickname: [
@@ -210,6 +214,17 @@ function triggerUpload() {
   fileInputRef.value?.click()
 }
 
+function clearAvatarPreviewUrl() {
+  if (avatarPreviewUrl.value) {
+    URL.revokeObjectURL(avatarPreviewUrl.value)
+    avatarPreviewUrl.value = ''
+  }
+}
+
+function resolveUploadedImageUrl(result: { url?: string; filePath?: string }): string {
+  return result.url || result.filePath || ''
+}
+
 async function handleFileChange(e: Event) {
   const target = e.target as HTMLInputElement
   const file = target.files?.[0]
@@ -227,12 +242,30 @@ async function handleFileChange(e: Event) {
     return
   }
 
+  const previousAvatar = formData.value.avatar || ''
+  clearAvatarPreviewUrl()
+  avatarPreviewUrl.value = URL.createObjectURL(file)
+
   try {
     message.loading('头像上传中...')
     const result = await fileApi.uploadImage(file)
-    formData.value.avatar = result.url
+    const avatarUrl = resolveUploadedImageUrl(result)
+    if (!avatarUrl) {
+      throw new Error('上传接口未返回头像地址')
+    }
+
+    formData.value.avatar = avatarUrl
+    await authApi.updateProfile({ avatar: avatarUrl })
+    await userStore.getInfo()
+    originalData.value = {
+      ...originalData.value,
+      avatar: avatarUrl
+    }
+    clearAvatarPreviewUrl()
     message.success('头像上传成功')
   } catch (error) {
+    formData.value.avatar = previousAvatar
+    clearAvatarPreviewUrl()
     message.error('头像上传失败')
   }
 
@@ -301,6 +334,10 @@ function handleReset() {
 
 onMounted(() => {
   loadProfile()
+})
+
+onBeforeUnmount(() => {
+  clearAvatarPreviewUrl()
 })
 </script>
 
