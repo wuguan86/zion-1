@@ -12,10 +12,9 @@
     <artifactId>zion-biz</artifactId>
     <packaging>jar</packaging>
     <name>Zion Biz</name>
-    <description>业务模块</description>
+    <description>业务扩展模块</description>
 
     <dependencies>
-        <!-- 基础设施模块 -->
         <dependency>
             <groupId>com.zion</groupId>
             <artifactId>zion-db</artifactId>
@@ -32,40 +31,25 @@
             <groupId>com.zion</groupId>
             <artifactId>zion-crypto</artifactId>
         </dependency>
-
-        <!-- 系统模块（Log 注解、权限等） -->
         <dependency>
             <groupId>com.zion</groupId>
             <artifactId>zion-system</artifactId>
         </dependency>
-
-        <!-- Sa-Token -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot4-starter</artifactId>
         </dependency>
-
-        <!-- Hutool -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
         </dependency>
-
-
-
-        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-
-        <!-- EasyExcel -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
         </dependency>
-
-
-
     </dependencies>
 </project>

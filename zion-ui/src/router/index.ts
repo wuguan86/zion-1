@@ -84,12 +84,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/system/file-config/index.vue'),
         meta: { title: '文件配置', icon: 'CloudOutline' }
       },
-      {
-        path: 'system/customer',
-        name: 'Customer',
-        component: () => import('@/views/system/customer/index.vue'),
-        meta: { title: '客户管理', icon: 'StarOutline' }
-      },
       // 消息中心
       // 组织管理
       {
@@ -118,12 +112,6 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '登录日志', icon: 'LogInOutline' }
       },
       // 系统监控
-      {
-        path: 'test/test',
-        name: 'Test',
-        component: () => import('@/views/test/test/index.vue'),
-        meta: { title: '测试菜单', icon: 'StarOutline' }
-      },
       // 开发工具
       {
         path: 'tool/gen',
